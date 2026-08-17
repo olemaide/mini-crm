@@ -8,9 +8,9 @@ Build plan: [`../MINI-CRM-MVP-PLAN.md`](../MINI-CRM-MVP-PLAN.md) — read it bef
 adding anything. It sets out the phases, the schema, and the decisions that have
 already been made and closed.
 
-**Current status: Phase 2 complete.** Sign-in, organizations, roles, team
-invitations, contacts and companies work against a live Supabase project in
-`eu-central-1`. CSV import (Phase 3) and the pipeline board (Phase 4) are next.
+**Current status: Phase 3 complete.** Sign-in, organizations, roles, team
+invitations, contacts, companies and CSV import work against a live Supabase
+project in `eu-central-1`. The pipeline board (Phase 4) is next.
 
 There is **no transactional email provider** — invitations are copyable one-time
 links, and Supabase Auth sends the auth mail. See §1.6 of the plan for what that
@@ -125,6 +125,16 @@ The security model. Read this before touching a policy.
 - Cross-tenant links are prevented **structurally**: `contacts` references
   `companies (organization_id, id)` through a composite foreign key, so a
   contact pointing at another tenant's company cannot be represented at all.
+- **Never run a query per row under RLS.** A policy's subplan is re-planned on
+  every execution — 0.07 ms becomes 4.5 ms. Fine for a page view, ruinous in a
+  loop (measured at 35× on import). Go set-based, or use `security definer`
+  with an explicit `is_org_member` check first and every query scoped by an
+  `organization_id` read from a trusted row, never from the caller.
+- **Any function comparing `citext` needs `set search_path = 'extensions'`.**
+  With `search_path = ''` the citext `=` operator is invisible and Postgres
+  silently falls back to case-sensitive `text` comparison — no error, and the
+  unique index still behaves correctly, so dedupe misses and the insert then
+  blows up on the constraint.
 
 Invitation tokens are credentials: only a SHA-256 hash is stored, the raw token
 is returned exactly once by `create_invitation()`, and acceptance requires being

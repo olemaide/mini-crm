@@ -24,6 +24,7 @@ export type Database = {
           created_at: string;
           domain: string | null;
           id: string;
+          import_job_id: string | null;
           industry: string | null;
           name: string;
           notes: string | null;
@@ -41,6 +42,7 @@ export type Database = {
           created_at?: string;
           domain?: string | null;
           id?: string;
+          import_job_id?: string | null;
           industry?: string | null;
           name: string;
           notes?: string | null;
@@ -58,6 +60,7 @@ export type Database = {
           created_at?: string;
           domain?: string | null;
           id?: string;
+          import_job_id?: string | null;
           industry?: string | null;
           name?: string;
           notes?: string | null;
@@ -69,6 +72,13 @@ export type Database = {
           website?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "companies_import_job_id_fkey";
+            columns: ["import_job_id"];
+            isOneToOne: false;
+            referencedRelation: "import_jobs";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "companies_organization_id_fkey";
             columns: ["organization_id"];
@@ -92,6 +102,7 @@ export type Database = {
           email: string | null;
           first_name: string | null;
           id: string;
+          import_job_id: string | null;
           job_title: string | null;
           last_name: string | null;
           linkedin_url: string | null;
@@ -108,6 +119,7 @@ export type Database = {
           email?: string | null;
           first_name?: string | null;
           id?: string;
+          import_job_id?: string | null;
           job_title?: string | null;
           last_name?: string | null;
           linkedin_url?: string | null;
@@ -124,6 +136,7 @@ export type Database = {
           email?: string | null;
           first_name?: string | null;
           id?: string;
+          import_job_id?: string | null;
           job_title?: string | null;
           last_name?: string | null;
           linkedin_url?: string | null;
@@ -135,6 +148,13 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "contacts_import_job_id_fkey";
+            columns: ["import_job_id"];
+            isOneToOne: false;
+            referencedRelation: "import_jobs";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "contacts_company_same_org";
             columns: ["organization_id", "company_id"];
@@ -172,6 +192,84 @@ export type Database = {
           ok?: boolean;
         };
         Relationships: [];
+      };
+      import_jobs: {
+        Row: {
+          completed_at: string | null;
+          create_companies: boolean;
+          created_at: string;
+          created_by: string | null;
+          created_count: number;
+          duplicate_policy: Database["public"]["Enums"]["import_duplicate_policy"];
+          error_count: number;
+          errors: Json;
+          filename: string;
+          id: string;
+          mapping: Json | null;
+          organization_id: string;
+          processed_rows: number;
+          skipped_count: number;
+          status: Database["public"]["Enums"]["import_status"];
+          total_rows: number;
+          updated_at: string;
+          updated_count: number;
+        };
+        Insert: {
+          completed_at?: string | null;
+          create_companies?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+          created_count?: number;
+          duplicate_policy?: Database["public"]["Enums"]["import_duplicate_policy"];
+          error_count?: number;
+          errors?: Json;
+          filename: string;
+          id?: string;
+          mapping?: Json | null;
+          organization_id: string;
+          processed_rows?: number;
+          skipped_count?: number;
+          status?: Database["public"]["Enums"]["import_status"];
+          total_rows?: number;
+          updated_at?: string;
+          updated_count?: number;
+        };
+        Update: {
+          completed_at?: string | null;
+          create_companies?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+          created_count?: number;
+          duplicate_policy?: Database["public"]["Enums"]["import_duplicate_policy"];
+          error_count?: number;
+          errors?: Json;
+          filename?: string;
+          id?: string;
+          mapping?: Json | null;
+          organization_id?: string;
+          processed_rows?: number;
+          skipped_count?: number;
+          status?: Database["public"]["Enums"]["import_status"];
+          total_rows?: number;
+          updated_at?: string;
+          updated_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "import_jobs_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "import_jobs_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       invitations: {
         Row: {
@@ -353,6 +451,17 @@ export type Database = {
           token: string;
         }[];
       };
+      create_import_job: {
+        Args: {
+          p_create_companies?: boolean;
+          p_duplicate_policy?: Database["public"]["Enums"]["import_duplicate_policy"];
+          p_filename: string;
+          p_mapping?: Json;
+          p_organization_id: string;
+          p_total_rows: number;
+        };
+        Returns: string;
+      };
       create_organization: {
         Args: {
           p_currency?: string;
@@ -362,7 +471,18 @@ export type Database = {
         };
         Returns: string;
       };
+      finalize_import_job: {
+        Args: {
+          p_job_id: string;
+          p_status: Database["public"]["Enums"]["import_status"];
+        };
+        Returns: undefined;
+      };
       hash_invitation_token: { Args: { p_token: string }; Returns: string };
+      import_contacts_chunk: {
+        Args: { p_job_id: string; p_rows: Json };
+        Returns: Json;
+      };
       is_org_admin: { Args: { org: string }; Returns: boolean };
       is_org_member: { Args: { org: string }; Returns: boolean };
       is_org_owner: { Args: { org: string }; Returns: boolean };
@@ -372,6 +492,14 @@ export type Database = {
       org_role_of: {
         Args: { org: string };
         Returns: Database["public"]["Enums"]["org_role"];
+      };
+      preview_import_duplicates: {
+        Args: {
+          p_emails?: string[];
+          p_organization_id: string;
+          p_phones?: string[];
+        };
+        Returns: Json;
       };
       preview_invitation: {
         Args: { p_token: string };
@@ -386,9 +514,12 @@ export type Database = {
         Returns: boolean;
       };
       slugify: { Args: { value: string }; Returns: string };
+      undo_import_job: { Args: { p_job_id: string }; Returns: Json };
     };
     Enums: {
       contact_source: "manual" | "csv" | "api";
+      import_duplicate_policy: "skip" | "update" | "create";
+      import_status: "pending" | "running" | "completed" | "failed" | "cancelled" | "rolled_back";
       org_role: "owner" | "admin" | "member";
     };
     CompositeTypes: {
@@ -496,6 +627,8 @@ export const Constants = {
   public: {
     Enums: {
       contact_source: ["manual", "csv", "api"],
+      import_duplicate_policy: ["skip", "update", "create"],
+      import_status: ["pending", "running", "completed", "failed", "cancelled", "rolled_back"],
       org_role: ["owner", "admin", "member"],
     },
   },

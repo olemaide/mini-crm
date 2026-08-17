@@ -1,0 +1,6 @@
+Vorname,Nachname,E-Mail,Notizen
+Anna,Schmidt,anna@firma-a.example,ok
+,,,nur eine Notiz
+,,nicht-eine-email,kaputte Adresse
+Ben,,,nur Vorname
+,,ben2@firma-a.example,nur E-Mail

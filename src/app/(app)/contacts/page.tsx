@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { UsersIcon } from "lucide-react";
+import Link from "next/link";
+import { UploadIcon, UsersIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { ListPagination } from "@/components/list/list-pagination";
 import { ListSearch } from "@/components/list/list-search";
@@ -44,7 +46,15 @@ export default async function ContactsPage({ searchParams }: PageProps<"/contact
     <>
       <PageHeader
         title={t("title")}
-        actions={<NewContactDialog companies={companyOptions} members={memberOptions} />}
+        actions={
+          <>
+            <Button variant="outline" size="sm" render={<Link href="/contacts/import" />}>
+              <UploadIcon className="size-4" />
+              {t("importAction")}
+            </Button>
+            <NewContactDialog companies={companyOptions} members={memberOptions} />
+          </>
+        }
       />
 
       <div className="flex flex-col gap-4 p-4 md:p-6">
