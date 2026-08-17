@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -126,5 +126,26 @@
   }
   html {
     @apply font-sans;
+  }
+  /*
+   * Tailwind v4 dropped v3's preflight rule that gave buttons a pointer cursor,
+   * so every button in the app inherited the browser default (an arrow). Put it
+   * back for things that are actually clickable.
+   *
+   * Disabled controls are excluded so the `disabled:cursor-not-allowed`
+   * utilities on inputs still read through — and because a pointer on a dead
+   * control is a lie.
+   */
+  button:not(:disabled),
+  summary,
+  label[for],
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  input[type="range"]:not(:disabled) {
+    cursor: pointer;
   }
 }

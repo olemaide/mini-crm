@@ -8,8 +8,13 @@ Build plan: [`../MINI-CRM-MVP-PLAN.md`](../MINI-CRM-MVP-PLAN.md) — read it bef
 adding anything. It sets out the phases, the schema, and the decisions that have
 already been made and closed.
 
-**Current status: Phase 0 (foundations) complete.** No authentication and no
-persisted data yet.
+**Current status: Phase 2 complete.** Sign-in, organizations, roles, team
+invitations, contacts and companies work against a live Supabase project in
+`eu-central-1`. CSV import (Phase 3) and the pipeline board (Phase 4) are next.
+
+There is **no transactional email provider** — invitations are copyable one-time
+links, and Supabase Auth sends the auth mail. See §1.6 of the plan for what that
+costs and when to revisit it.
 
 ---
 
@@ -93,6 +98,48 @@ These are enforced, not aspirational. The full list is §3 of the plan.
 6. **Environment access goes through `@/env`,** never `process.env`.
 7. **The service-role key never reaches the browser.** CI greps the client
    bundle for it.
+8. **Server Actions return `ActionResult`, never throw across the boundary.**
+   Errors carry a translation _key_ (`errors.action.*`), so the message is
+   composed in the reader's language — same rule as #5.
+
+### Tenant isolation
+
+The security model. Read this before touching a policy.
+
+- **Every RLS policy uses the set form:**
+  `organization_id in (select public.my_organization_ids())`. Never the scalar
+  `is_org_member(organization_id)` — that is evaluated once per row and was
+  measured **30× slower** on a 10,000-row table. The scalar helpers are still
+  correct inside RPCs, where they run once per request.
+- The helper functions are `security definer` with `set search_path = ''`, and
+  **both properties are load-bearing** — without definer, a policy on
+  `organization_members` that reads `organization_members` recurses forever.
+- They call `(select auth.uid())`, not `auth.uid()`, so Postgres evaluates it
+  once per statement.
+- Rules RLS cannot express live in triggers: `guard_membership_changes()` keeps
+  at least one owner and restricts who may grant ownership;
+  `validate_owner_is_member()` stops a record being owned by an outsider.
+- Those triggers deliberately trust callers with **no JWT** (service role). A
+  careless `createSupabaseAdminClient()` write bypasses the invariants too, not
+  just RLS.
+- Cross-tenant links are prevented **structurally**: `contacts` references
+  `companies (organization_id, id)` through a composite foreign key, so a
+  contact pointing at another tenant's company cannot be represented at all.
+
+Invitation tokens are credentials: only a SHA-256 hash is stored, the raw token
+is returned exactly once by `create_invitation()`, and acceptance requires being
+authenticated as the invited address.
+
+### Lists and pagination
+
+- Sort, filter and page live in the URL, so views are shareable and
+  back/forward works. Parsed and clamped in `lib/list-params.ts`.
+- Sortable columns are a **closed allow-list**, each backed by an index ending
+  in `id` — without a total order, rows drift between pages.
+- Tables are hand-rolled rather than built on TanStack Table: every data
+  operation runs in Postgres, so the library's client-side row models would go
+  unused. The dependency is installed but currently unused — remove it if
+  nothing needs it by the end of Phase 3.
 
 ### Next.js 16 gotchas
 

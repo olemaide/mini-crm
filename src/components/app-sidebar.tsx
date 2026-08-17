@@ -13,9 +13,13 @@ import {
   UsersIcon,
 } from "lucide-react";
 
+import { OrgSwitcher } from "@/components/org-switcher";
+import { UserMenu } from "@/components/user-menu";
+import type { Membership, Organization, OrgRole } from "@/lib/auth/session";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -42,23 +46,31 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: "/settings", labelKey: "settings", icon: SettingsIcon },
 ];
 
-export function AppSidebar() {
+const ROLE_LABEL_KEY = {
+  owner: "roleOwner",
+  admin: "roleAdmin",
+  member: "roleMember",
+} as const satisfies Record<OrgRole, string>;
+
+export function AppSidebar({
+  organization,
+  memberships,
+  role,
+  user,
+}: {
+  organization: Organization;
+  memberships: Membership[];
+  role: OrgRole;
+  user: { fullName: string | null; email: string; avatarUrl: string | null };
+}) {
   const pathname = usePathname();
   const t = useTranslations("nav");
-  const tCommon = useTranslations("common");
+  const tMembers = useTranslations("members");
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-1.5">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-            {/* Wordmark placeholder until the design pass lands a real logo. */}
-            <span aria-hidden>MC</span>
-          </div>
-          <span className="truncate text-sm font-semibold group-data-[collapsible=icon]:hidden">
-            {tCommon("appName")}
-          </span>
-        </div>
+        <OrgSwitcher organization={organization} memberships={memberships} />
       </SidebarHeader>
 
       <SidebarContent>
@@ -87,6 +99,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <UserMenu
+          fullName={user.fullName}
+          email={user.email}
+          avatarUrl={user.avatarUrl}
+          roleLabel={tMembers(ROLE_LABEL_KEY[role])}
+        />
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

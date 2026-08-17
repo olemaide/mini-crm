@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ArrowRightIcon, ActivityIcon } from "lucide-react";
+import { ActivityIcon, ArrowRightIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth/session";
 
 /**
  * Public landing page.
@@ -15,12 +16,21 @@ import { Button } from "@/components/ui/button";
 export default async function HomePage() {
   const t = await getTranslations("home");
   const tCommon = await getTranslations("common");
+  const tAuth = await getTranslations("auth");
+  const user = await getCurrentUser();
 
   return (
     <main className="flex flex-1 flex-col">
       <div className="flex items-center justify-between border-b px-4 py-3">
         <span className="text-sm font-semibold">{tCommon("appName")}</span>
-        <LocaleSwitcher />
+        <div className="flex items-center gap-1">
+          <LocaleSwitcher />
+          {user ? null : (
+            <Button variant="ghost" size="sm" render={<Link href="/login" />}>
+              {tAuth("signInAction")}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-6 px-6 py-20">
@@ -33,8 +43,8 @@ export default async function HomePage() {
         <p className="text-base leading-relaxed text-muted-foreground">{t("body")}</p>
 
         <div className="flex flex-wrap items-center gap-3 pt-2">
-          <Button render={<Link href="/dashboard" />}>
-            {t("openApp")}
+          <Button render={<Link href={user ? "/dashboard" : "/signup"} />}>
+            {user ? t("openApp") : tAuth("signUpAction")}
             <ArrowRightIcon className="size-4" />
           </Button>
           <Button variant="outline" render={<Link href="/api/health" />}>
