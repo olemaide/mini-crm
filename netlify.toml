@@ -1,0 +1,25 @@
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "11"
+  # Netlify installs @netlify/plugin-nextjs automatically for Next.js sites.
+
+# Staging must never be indexed. Deploy previews and branch deploys share this.
+[[context.deploy-preview.headers]]
+  for = "/*"
+  [context.deploy-preview.headers.values]
+    X-Robots-Tag = "noindex"
+
+[[context.branch-deploy.headers]]
+  for = "/*"
+  [context.branch-deploy.headers.values]
+    X-Robots-Tag = "noindex"
+
+# The uptime monitor polls this; it must never be served from cache.
+[[headers]]
+  for = "/api/health"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"

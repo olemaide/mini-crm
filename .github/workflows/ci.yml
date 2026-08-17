@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Typecheck, lint & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Message catalogue parity
+        # Warn-only until the German pass in Phase 9b, then switch to
+        # i18n:check:strict so a missing translation fails the build.
+        run: pnpm i18n:check
+
+      - name: Build
+        run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+  service-role-leak:
+    name: Service-role key must not reach the browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Scan client bundle
+        run: |
+          # The service-role key bypasses RLS entirely. If its *name* appears in
+          # a client chunk, some module reached for it from the browser side and
+          # the value itself is one refactor away from shipping.
+          if grep -rn "SUPABASE_SERVICE_ROLE_KEY" .next/static 2>/dev/null; then
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY referenced in the client bundle"
+            exit 1
+          fi
+          echo "Clean: no service-role reference in .next/static"
+
+  rls-audit:
+    name: RLS audit
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply migrations
+        env:
+          PGPASSWORD: postgres
+        run: |
+          for file in supabase/migrations/*.sql; do
+            echo "→ $file"
+            psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f "$file"
+          done
+
+      - name: Audit tenant isolation
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f scripts/rls-audit.sql

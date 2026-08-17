@@ -1,0 +1,86 @@
+{
+  "common": {
+    "appName": "Mini CRM",
+    "appTagline": "Kontakte importieren, alle Deals auf einem Board sehen und kein Follow-up mehr vergessen.",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Anlegen",
+    "search": "Suchen",
+    "searchPlaceholder": "Kontakte, Firmen, Deals durchsuchen…",
+    "loading": "Wird geladen…",
+    "retry": "Erneut versuchen",
+    "comingSoon": "Demnächst",
+    "phaseBadge": "Phase {phase}"
+  },
+  "nav": {
+    "sectionMain": "Arbeitsbereich",
+    "dashboard": "Dashboard",
+    "contacts": "Kontakte",
+    "companies": "Firmen",
+    "pipeline": "Pipeline",
+    "tasks": "Aufgaben",
+    "settings": "Einstellungen",
+    "toggleSidebar": "Seitenleiste umschalten"
+  },
+  "locale": {
+    "label": "Sprache",
+    "change": "Sprache wechseln"
+  },
+  "home": {
+    "eyebrow": "Phase 0 · Grundlagen",
+    "heading": "Das CRM-Grundgerüst steht",
+    "body": "Anmeldung, Kontakte und das Pipeline-Board folgen in den nächsten Phasen. Diese Seite bestätigt, dass Framework, Styling und Übersetzungsebene zusammenspielen.",
+    "openApp": "Anwendung öffnen",
+    "healthCheck": "Health-Check"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Eine reine Vorschau. Echte Zahlen kommen mit der Pipeline in Phase 4.",
+    "openDeals": "Offene Deals",
+    "pipelineValue": "Pipeline-Wert",
+    "weightedValue": "Gewichteter Wert",
+    "overdueTasks": "Überfällige Aufgaben",
+    "sampleNotice": "Beispieldaten — diese Werte sind fest hinterlegt, um die sprachabhängige Formatierung zu prüfen.",
+    "lastUpdated": "Zuletzt aktualisiert {date}",
+    "overdueCount": "{count, plural, =0 {Nichts überfällig} one {# Aufgabe überfällig} other {# Aufgaben überfällig}}"
+  },
+  "contacts": {
+    "title": "Kontakte",
+    "emptyTitle": "Noch keine Kontakte",
+    "emptyBody": "Kontaktverwaltung und CSV-Import folgen in Phase 2 und 3.",
+    "action": "Kontakt anlegen"
+  },
+  "companies": {
+    "title": "Firmen",
+    "emptyTitle": "Noch keine Firmen",
+    "emptyBody": "Firmen sind in diesem CRM ein eigenständiges Objekt und kommen gemeinsam mit den Kontakten in Phase 2.",
+    "action": "Firma anlegen"
+  },
+  "pipeline": {
+    "title": "Pipeline",
+    "emptyTitle": "Noch keine Pipeline",
+    "emptyBody": "Das Kanban-Board mit Drag & Drop und gewichteten Phasenwerten kommt in Phase 4.",
+    "action": "Deal anlegen"
+  },
+  "tasks": {
+    "title": "Aufgaben",
+    "emptyTitle": "Noch keine Aufgaben",
+    "emptyBody": "Aufgaben, Fälligkeitsdaten und die Überfällig-Anzeige kommen in Phase 6.",
+    "action": "Aufgabe anlegen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "languageTitle": "Sprache",
+    "languageBody": "Gilt nur für die Oberfläche. Von Ihnen angelegte Datensätze behalten den Wortlaut, den Sie vergeben haben."
+  },
+  "errors": {
+    "genericTitle": "Da ist etwas schiefgelaufen",
+    "genericBody": "Der Fehler wurde protokolliert. Versuchen Sie es erneut und melden Sie sich, wenn er erneut auftritt.",
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundBody": "Diese Seite existiert nicht oder wurde verschoben.",
+    "backHome": "Zurück zum Start",
+    "digest": "Referenz: {digest}"
+  }
+}

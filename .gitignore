@@ -32,9 +32,19 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but the template must be committed, or nobody knows which vars exist.
+!.env.example
 
 # vercel
 .vercel
+
+# netlify
+.netlify
+
+# supabase local stack
+supabase/.branches
+supabase/.temp
+supabase/.env
 
 # typescript
 *.tsbuildinfo
