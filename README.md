@@ -8,9 +8,10 @@ Build plan: [`../MINI-CRM-MVP-PLAN.md`](../MINI-CRM-MVP-PLAN.md) — read it bef
 adding anything. It sets out the phases, the schema, and the decisions that have
 already been made and closed.
 
-**Current status: Phase 3 complete.** Sign-in, organizations, roles, team
-invitations, contacts, companies and CSV import work against a live Supabase
-project in `eu-central-1`. The pipeline board (Phase 4) is next.
+**Current status: Phase 4 complete.** Sign-in, organizations, roles, team
+invitations, contacts, companies, CSV import and the Kanban pipeline work
+against a live Supabase project in `eu-central-1`. The activity feed (Phase 5)
+and tasks (Phase 6) are next.
 
 There is **no transactional email provider** — invitations are copyable one-time
 links, and Supabase Auth sends the auth mail. See §1.6 of the plan for what that

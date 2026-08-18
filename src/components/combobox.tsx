@@ -16,7 +16,13 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export type ComboboxOption = { value: string; label: string };
+export type ComboboxOption = {
+  value: string;
+  label: string;
+  /** Rendered dimmed and unselectable. Still matched by search, so the option
+      is visible rather than mysteriously missing. */
+  disabled?: boolean;
+};
 
 /**
  * Searchable single-select.
@@ -101,6 +107,7 @@ export function Combobox({
                   // cmdk filters on this string, so it must be the human-
                   // readable label, not the UUID.
                   value={`${option.label} ${option.value}`}
+                  disabled={option.disabled}
                   onSelect={() => select(option.value)}
                 >
                   <span className="truncate">{option.label}</span>

@@ -178,6 +178,150 @@ export type Database = {
           },
         ];
       };
+      deal_stage_history: {
+        Row: {
+          changed_at: string;
+          changed_by: string | null;
+          deal_id: string;
+          from_stage_id: string | null;
+          id: number;
+          organization_id: string;
+          to_stage_id: string;
+        };
+        Insert: {
+          changed_at?: string;
+          changed_by?: string | null;
+          deal_id: string;
+          from_stage_id?: string | null;
+          id?: never;
+          organization_id: string;
+          to_stage_id: string;
+        };
+        Update: {
+          changed_at?: string;
+          changed_by?: string | null;
+          deal_id?: string;
+          from_stage_id?: string | null;
+          id?: never;
+          organization_id?: string;
+          to_stage_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "deal_stage_history_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deal_stage_history_to_stage_id_fkey";
+            columns: ["to_stage_id"];
+            isOneToOne: false;
+            referencedRelation: "pipeline_stages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      deals: {
+        Row: {
+          closed_at: string | null;
+          company_id: string | null;
+          contact_id: string | null;
+          created_at: string;
+          currency: string;
+          expected_close_date: string | null;
+          id: string;
+          lost_reason: string | null;
+          organization_id: string;
+          owner_id: string | null;
+          pipeline_id: string;
+          position: number;
+          stage_entered_at: string;
+          stage_id: string;
+          status: Database["public"]["Enums"]["deal_status"];
+          title: string;
+          updated_at: string;
+          value_cents: number;
+        };
+        Insert: {
+          closed_at?: string | null;
+          company_id?: string | null;
+          contact_id?: string | null;
+          created_at?: string;
+          currency?: string;
+          expected_close_date?: string | null;
+          id?: string;
+          lost_reason?: string | null;
+          organization_id: string;
+          owner_id?: string | null;
+          pipeline_id: string;
+          position?: number;
+          stage_entered_at?: string;
+          stage_id: string;
+          status?: Database["public"]["Enums"]["deal_status"];
+          title: string;
+          updated_at?: string;
+          value_cents?: number;
+        };
+        Update: {
+          closed_at?: string | null;
+          company_id?: string | null;
+          contact_id?: string | null;
+          created_at?: string;
+          currency?: string;
+          expected_close_date?: string | null;
+          id?: string;
+          lost_reason?: string | null;
+          organization_id?: string;
+          owner_id?: string | null;
+          pipeline_id?: string;
+          position?: number;
+          stage_entered_at?: string;
+          stage_id?: string;
+          status?: Database["public"]["Enums"]["deal_status"];
+          title?: string;
+          updated_at?: string;
+          value_cents?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "deals_company_same_org";
+            columns: ["organization_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "deals_contact_same_org";
+            columns: ["organization_id", "contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "deals_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deals_pipeline_same_org";
+            columns: ["organization_id", "pipeline_id"];
+            isOneToOne: false;
+            referencedRelation: "pipelines";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "deals_stage_same_pipeline";
+            columns: ["organization_id", "pipeline_id", "stage_id"];
+            isOneToOne: false;
+            referencedRelation: "pipeline_stages";
+            referencedColumns: ["organization_id", "pipeline_id", "id"];
+          },
+        ];
+      };
       health_check: {
         Row: {
           checked_at: string;
@@ -396,6 +540,88 @@ export type Database = {
         };
         Relationships: [];
       };
+      pipeline_stages: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_lost: boolean;
+          is_won: boolean;
+          name: string;
+          organization_id: string;
+          pipeline_id: string;
+          position: number;
+          probability: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          is_lost?: boolean;
+          is_won?: boolean;
+          name: string;
+          organization_id: string;
+          pipeline_id: string;
+          position: number;
+          probability?: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          is_lost?: boolean;
+          is_won?: boolean;
+          name?: string;
+          organization_id?: string;
+          pipeline_id?: string;
+          position?: number;
+          probability?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stages_pipeline_same_org";
+            columns: ["organization_id", "pipeline_id"];
+            isOneToOne: false;
+            referencedRelation: "pipelines";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      pipelines: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_default: boolean;
+          name: string;
+          organization_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          is_default?: boolean;
+          name: string;
+          organization_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          is_default?: boolean;
+          name?: string;
+          organization_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pipelines_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -493,6 +719,15 @@ export type Database = {
         Args: { org: string };
         Returns: Database["public"]["Enums"]["org_role"];
       };
+      pipeline_board: {
+        Args: {
+          p_cards_per_stage?: number;
+          p_owner_id?: string;
+          p_pipeline_id: string;
+          p_query?: string;
+        };
+        Returns: Json;
+      };
       preview_import_duplicates: {
         Args: {
           p_emails?: string[];
@@ -509,6 +744,10 @@ export type Database = {
           role: Database["public"]["Enums"]["org_role"];
         }[];
       };
+      seed_default_pipeline: {
+        Args: { p_name: string; p_organization_id: string; p_stages: Json };
+        Returns: string;
+      };
       shares_organization_with: {
         Args: { target_user: string };
         Returns: boolean;
@@ -518,6 +757,7 @@ export type Database = {
     };
     Enums: {
       contact_source: "manual" | "csv" | "api";
+      deal_status: "open" | "won" | "lost";
       import_duplicate_policy: "skip" | "update" | "create";
       import_status: "pending" | "running" | "completed" | "failed" | "cancelled" | "rolled_back";
       org_role: "owner" | "admin" | "member";
@@ -627,6 +867,7 @@ export const Constants = {
   public: {
     Enums: {
       contact_source: ["manual", "csv", "api"],
+      deal_status: ["open", "won", "lost"],
       import_duplicate_policy: ["skip", "update", "create"],
       import_status: ["pending", "running", "completed", "failed", "cancelled", "rolled_back"],
       org_role: ["owner", "admin", "member"],

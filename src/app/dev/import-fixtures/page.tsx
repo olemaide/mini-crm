@@ -11,7 +11,9 @@ import {
   type PreparedRow,
 } from "@/lib/csv";
 import { cn } from "@/lib/utils";
+import { parseMoneyToCents } from "@/lib/money";
 import { FIXTURES, type FixtureExpectation } from "./expectations";
+import { MONEY_CASES } from "./money-cases";
 
 /* eslint-disable i18next/no-literal-string --
  * Developer tooling, never shown to a user and never shipped: the page 404s
@@ -107,19 +109,30 @@ export default async function ImportFixturesPage() {
   if (env.NODE_ENV === "production") notFound();
 
   const results = await Promise.all(FIXTURES.map(runFixture));
-  const total = results.reduce((sum, r) => sum + r.checks.length, 0);
-  const failed = results.reduce(
-    (sum, r) => sum + r.checks.filter((c) => !c.pass).length + (r.fatal ? 1 : 0),
-    0,
-  );
+
+  const moneyChecks = MONEY_CASES.map((testCase) => {
+    const actual = parseMoneyToCents(testCase.input);
+    return {
+      ...testCase,
+      actual,
+      pass: actual === testCase.expected,
+    };
+  });
+
+  const total = results.reduce((sum, r) => sum + r.checks.length, 0) + moneyChecks.length;
+  const failed =
+    results.reduce(
+      (sum, r) => sum + r.checks.filter((c) => !c.pass).length + (r.fatal ? 1 : 0),
+      0,
+    ) + moneyChecks.filter((c) => !c.pass).length;
 
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <header className="space-y-1">
-        <h1 className="text-xl font-semibold">CSV import fixtures</h1>
+        <h1 className="text-xl font-semibold">Import &amp; parsing fixtures</h1>
         <p className="text-sm text-muted-foreground">
-          Stands in for unit tests on the import pipeline. Run before any release that touches
-          import.
+          Stands in for unit tests on the CSV pipeline and the money parser. Run before any release
+          that touches import or deal values.
         </p>
         <p
           className={cn(
@@ -171,6 +184,41 @@ export default async function ImportFixturesPage() {
           </section>
         );
       })}
+
+      <section className="rounded-lg border">
+        <div className="flex items-start gap-3 border-b px-4 py-3">
+          <span
+            className={cn(
+              "mt-0.5 inline-block size-2.5 shrink-0 rounded-full",
+              moneyChecks.some((c) => !c.pass) ? "bg-destructive" : "bg-emerald-500",
+            )}
+          />
+          <div>
+            <h2 className="font-mono text-sm font-medium">parseMoneyToCents</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Deal values arrive as free text. Both the German and English grammars must parse, and
+              a lone separator is resolved by the group-of-three test.
+            </p>
+          </div>
+        </div>
+
+        <table className="w-full text-sm">
+          <tbody className="divide-y divide-border">
+            {moneyChecks.map((c, index) => (
+              <tr key={index} className={cn(!c.pass && "bg-destructive/5")}>
+                <td className="px-4 py-1.5 font-mono text-xs">
+                  {c.input === "" ? "(empty)" : JSON.stringify(c.input)}
+                </td>
+                <td className="px-4 py-1.5 font-mono text-xs text-muted-foreground">
+                  {c.pass ? String(c.actual) : `expected ${c.expected} · got ${c.actual}`}
+                </td>
+                <td className="px-4 py-1.5 text-xs text-muted-foreground">{c.why}</td>
+                <td className="w-10 px-4 py-1.5 text-right">{c.pass ? "✓" : "✗"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
     </main>
   );
 }
