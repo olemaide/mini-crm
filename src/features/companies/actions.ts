@@ -10,6 +10,7 @@ import {
   runAction,
   type ActionResult,
 } from "@/lib/actions";
+import { requireEntitlement } from "@/features/billing/entitlements";
 import { getSession } from "@/lib/auth/session";
 import { normalizeDomain, normalizePhone, normalizeText, normalizeWebsite } from "@/lib/normalize";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -53,6 +54,11 @@ export async function createCompany(input: unknown): Promise<ActionResult<{ id: 
 
     const session = await getSession();
     if (!session) return fail("notAuthenticated");
+
+    // Convenience gate: a clear, translated message instead of a raw
+    // constraint error. The database trigger is what actually enforces it.
+    const denied = await requireEntitlement(session.organization.id, "write");
+    if (denied) return denied;
 
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase

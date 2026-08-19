@@ -8,10 +8,14 @@ Build plan: [`../MINI-CRM-MVP-PLAN.md`](../MINI-CRM-MVP-PLAN.md) — read it bef
 adding anything. It sets out the phases, the schema, and the decisions that have
 already been made and closed.
 
-**Current status: Phase 7 complete.** Sign-in, organizations, roles, team
+**Current status: Phase 8 complete.** Sign-in, organizations, roles, team
 invitations, contacts, companies, CSV import, the Kanban pipeline, the activity
-feed, follow-up tasks and ⌘K search all work against a live Supabase project in
-`eu-central-1`. Billing (Phase 8) is next.
+feed, follow-up tasks, ⌘K search and Polar billing all work against a live
+Supabase project in `eu-central-1`. Hardening and launch (Phase 9) is next.
+
+Billing runs against the **Polar sandbox** and needs `POLAR_ACCESS_TOKEN` set
+before checkout will open — until then the billing page renders a "not
+configured" state and everything else works normally.
 
 There is **no transactional email provider** — invitations are copyable one-time
 links, and Supabase Auth sends the auth mail. See §1.6 of the plan for what that
@@ -211,6 +215,28 @@ company_id, deal_id) = 1`. Roll-up (a deal's feed showing its contact's
   more use **`LIKE '%needle%'` on GIN**. A single character is refused.
 - Saved views store the **query string**, replayed through the same parsing as a
   hand-typed URL.
+
+### Billing
+
+- **`subscriptions` has no write policy.** Members can read it; only the webhook
+  handler writes, through the service-role client. A member who could update
+  this row could grant themselves the Pro plan.
+- **`billing_events` is deliberately unreachable** — RLS on, zero policies. Its
+  primary key is Polar's event id, so a replayed delivery collides and the
+  handler returns 200 without touching anything. The claim is inserted _before_
+  any work, which also closes the race between concurrent deliveries.
+- **Entitlements are derived, never stored** — same rule as "overdue".
+  `org_has_write_access()` and `plan_contact_limit()` compute from the plan, the
+  trial end and the period end at read time.
+- **The limits that protect revenue are enforced by triggers,** not by
+  `requireEntitlement()`. Anyone signed in can issue PostgREST requests
+  directly; the Server Action check exists to produce a clear translated message,
+  not to be the boundary.
+- **A signature failure and a schema failure are different.** A bad signature is 403. A payload that fails the SDK's zod model is still processed from the raw
+  JSON — the signature already proved it came from Polar — because dropping a
+  real subscription change over a new field would be a silent revenue bug.
+- Sandbox and production are **different Polar hosts**; `POLAR_SERVER` picks one.
+  Getting it wrong means checkouts that never become real money.
 
 ### Lists and pagination
 

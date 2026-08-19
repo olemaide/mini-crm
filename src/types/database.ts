@@ -135,6 +135,38 @@ export type Database = {
           },
         ];
       };
+      billing_events: {
+        Row: {
+          id: string;
+          organization_id: string | null;
+          payload: Json;
+          processed_at: string;
+          type: string;
+        };
+        Insert: {
+          id: string;
+          organization_id?: string | null;
+          payload: Json;
+          processed_at?: string;
+          type: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string | null;
+          payload?: Json;
+          processed_at?: string;
+          type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "billing_events_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       companies: {
         Row: {
           search_domain: string | null;
@@ -787,6 +819,59 @@ export type Database = {
           },
         ];
       };
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean;
+          created_at: string;
+          current_period_end: string | null;
+          organization_id: string;
+          plan: Database["public"]["Enums"]["billing_plan"];
+          polar_customer_id: string | null;
+          polar_subscription_id: string | null;
+          product_id: string | null;
+          seats: number;
+          status: string;
+          trial_ends_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          current_period_end?: string | null;
+          organization_id: string;
+          plan?: Database["public"]["Enums"]["billing_plan"];
+          polar_customer_id?: string | null;
+          polar_subscription_id?: string | null;
+          product_id?: string | null;
+          seats?: number;
+          status?: string;
+          trial_ends_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          current_period_end?: string | null;
+          organization_id?: string;
+          plan?: Database["public"]["Enums"]["billing_plan"];
+          polar_customer_id?: string | null;
+          polar_subscription_id?: string | null;
+          product_id?: string | null;
+          seats?: number;
+          status?: string;
+          trial_ends_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: true;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tasks: {
         Row: {
           assignee_id: string | null;
@@ -939,6 +1024,10 @@ export type Database = {
         };
         Returns: string;
       };
+      billing_state: { Args: { p_organization_id: string }; Returns: Json };
+      org_has_write_access: { Args: { p_organization_id: string }; Returns: boolean };
+      plan_contact_limit: { Args: { p_organization_id: string }; Returns: number };
+      billing_grace_days: { Args: never; Returns: number };
       global_search: {
         Args: {
           p_limit?: number;
@@ -1032,6 +1121,7 @@ export type Database = {
         | "task_completed"
         | "field_changed"
         | "import";
+      billing_plan: "trial" | "starter" | "pro" | "canceled" | "past_due";
       contact_source: "manual" | "csv" | "api";
       deal_status: "open" | "won" | "lost";
       import_duplicate_policy: "skip" | "update" | "create";
@@ -1160,6 +1250,7 @@ export const Constants = {
         "field_changed",
         "import",
       ],
+      billing_plan: ["trial", "starter", "pro", "canceled", "past_due"],
       contact_source: ["manual", "csv", "api"],
       deal_status: ["open", "won", "lost"],
       import_duplicate_policy: ["skip", "update", "create"],

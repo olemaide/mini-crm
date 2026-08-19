@@ -82,9 +82,17 @@ The one failure that ends the business rather than annoying a user.
 
 ## 7. Billing · Phase 8
 
-- [ ] Polar sandbox checkout unlocks the plan
-- [ ] Replaying the same webhook from the Polar dashboard changes nothing
-- [ ] Trial expiry drops the org to read-only with an upgrade CTA
+- [ ] `POLAR_SERVER` matches the environment — `production` for real money
+- [ ] The webhook endpoint URL points at this deployment, not the placeholder
+- [ ] Polar sandbox checkout unlocks the plan within seconds of returning
+- [ ] Replaying the same webhook from the Polar dashboard changes nothing:
+      `billing_events` still has one row for that id, `subscriptions` unchanged
+- [ ] Trial expiry drops the org to read-only with an upgrade CTA, and the
+      banner appears on every page rather than only in Settings
+- [ ] A non-admin member sees the plan but cannot start a checkout
+- [ ] Exceeding the Starter contact limit is refused by the database — try it
+      with a direct PostgREST call, not just through the form
+- [ ] The pricing table reads `19,00 €` in German and `€19.00` in English
 
 ## 8. Localization · Phase 0
 

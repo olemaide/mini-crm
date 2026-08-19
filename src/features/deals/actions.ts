@@ -10,6 +10,7 @@ import {
   runAction,
   type ActionResult,
 } from "@/lib/actions";
+import { requireEntitlement } from "@/features/billing/entitlements";
 import { getSession } from "@/lib/auth/session";
 import { parseMoneyToCents } from "@/lib/money";
 import { normalizeText } from "@/lib/normalize";
@@ -46,6 +47,11 @@ export async function createDeal(input: unknown): Promise<ActionResult<{ id: str
 
     const session = await getSession();
     if (!session) return fail("notAuthenticated");
+
+    // Convenience gate: a clear, translated message instead of a raw
+    // constraint error. The database trigger is what actually enforces it.
+    const denied = await requireEntitlement(session.organization.id, "write");
+    if (denied) return denied;
 
     const cents = parsed.data.value === null ? 0 : parseMoneyToCents(parsed.data.value);
     if (cents === null) return fail("invalidAmount");

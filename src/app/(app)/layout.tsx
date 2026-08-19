@@ -1,6 +1,7 @@
 import { getNow } from "next-intl/server";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { BillingBanner } from "@/features/billing/billing-banner";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getTaskCounts } from "@/features/tasks/queries";
 import { requireSession } from "@/lib/auth/session";
@@ -48,7 +49,10 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         }}
         overdueTaskCount={counts.overdue}
       />
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset>
+        <BillingBanner organizationId={session.organization.id} />
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }

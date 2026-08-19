@@ -21,6 +21,19 @@ declare
     'billing_events', -- raw webhook payloads, service-role only
     'rate_limits'     -- infrastructure counters, no personal data
   ];
+
+  /*
+   * Tables that are deliberately unreachable: RLS enabled with zero policies,
+   * so no client role can read or write them at all.
+   *
+   * A separate list from `exempt_tables` on purpose. "No tenant column" and
+   * "no policies whatsoever" are different claims, and a table that quietly
+   * lost its policies must not pass because it happened to be exempt from the
+   * other check. Every entry needs a reason.
+   */
+  no_policy_tables constant text[] := array[
+    'billing_events'  -- webhook log; written by the service role, read by nobody
+  ];
   problems text[] := '{}';
   rec record;
 begin
@@ -44,10 +57,17 @@ begin
   loop
     if not rec.rls_enabled then
       problems := problems || format('%s: RLS is not enabled', rec.table_name);
-    elsif rec.policy_count = 0 then
+    elsif rec.policy_count = 0 and not (rec.table_name = any(no_policy_tables)) then
       problems := problems || format(
         '%s: RLS enabled but zero policies — the table is unreachable, which is probably not what you meant',
         rec.table_name
+      );
+    elsif rec.policy_count > 0 and rec.table_name = any(no_policy_tables) then
+      -- The inverse is also a finding: a table listed as unreachable that has
+      -- grown a policy has quietly become reachable.
+      problems := problems || format(
+        '%s: listed as deliberately unreachable but now has %s policies',
+        rec.table_name, rec.policy_count
       );
     end if;
 
