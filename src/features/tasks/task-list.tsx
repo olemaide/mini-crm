@@ -1,0 +1,209 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { SparklesIcon } from "lucide-react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { deleteTask, setTaskStatus } from "./actions";
+import { DueBadge } from "./due-badge";
+import { LINK_PATH, type TaskRow } from "./types";
+
+const PRIORITY_TONE = {
+  high: "border-destructive/40 text-destructive",
+  normal: "",
+  low: "text-muted-foreground",
+} as const;
+
+export function TaskList({
+  tasks,
+  timeZone,
+  onEdit,
+  emptyLabel,
+  compact = false,
+}: {
+  tasks: TaskRow[];
+  timeZone: string;
+  onEdit?: (task: TaskRow) => void;
+  emptyLabel: string;
+  compact?: boolean;
+}) {
+  const t = useTranslations("tasks");
+  const tCommon = useTranslations("common");
+  const tError = useTranslations("errors.action");
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  /*
+   * Optimistically hidden ids.
+   *
+   * Ticking a task removes it from an "open tasks" list, so the row has to go
+   * immediately or the checkbox feels broken. Kept as a local set rather than
+   * mutating `tasks`, so a failed write simply restores the row by dropping
+   * the id again.
+   */
+  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+
+  function toggle(task: TaskRow, checked: boolean) {
+    const next = checked ? "completed" : "open";
+    setHidden((previous) => new Set(previous).add(task.id));
+
+    startTransition(async () => {
+      const result = await setTaskStatus({ id: task.id, status: next });
+
+      if (!result.ok) {
+        setHidden((previous) => {
+          const restored = new Set(previous);
+          restored.delete(task.id);
+          return restored;
+        });
+        const key = result.error.key as Parameters<typeof tError>[0];
+        toast.error(tError.has(key) ? tError(key) : tError("unexpected"));
+        return;
+      }
+
+      // Undo matters more here than anywhere else in the app: the checkbox is
+      // one pixel from the row you meant to click, and the task vanishes.
+      toast.success(checked ? t("completedToast") : t("reopenedToast"), {
+        action: {
+          label: tCommon("undo"),
+          onClick: () => {
+            startTransition(async () => {
+              await setTaskStatus({ id: task.id, status: checked ? "open" : "completed" });
+              setHidden((previous) => {
+                const restored = new Set(previous);
+                restored.delete(task.id);
+                return restored;
+              });
+              router.refresh();
+            });
+          },
+        },
+      });
+      router.refresh();
+    });
+  }
+
+  function remove(task: TaskRow) {
+    if (!window.confirm(t("confirmDelete"))) return;
+    setHidden((previous) => new Set(previous).add(task.id));
+    startTransition(async () => {
+      const result = await deleteTask({ id: task.id });
+      if (!result.ok) {
+        setHidden((previous) => {
+          const restored = new Set(previous);
+          restored.delete(task.id);
+          return restored;
+        });
+        const key = result.error.key as Parameters<typeof tError>[0];
+        toast.error(tError.has(key) ? tError(key) : tError("unexpected"));
+        return;
+      }
+      toast.success(t("deletedToast"));
+      router.refresh();
+    });
+  }
+
+  const visible = tasks.filter((task) => !hidden.has(task.id));
+
+  if (visible.length === 0) {
+    return <p className="py-6 text-center text-sm text-muted-foreground">{emptyLabel}</p>;
+  }
+
+  return (
+    <ul className="divide-y divide-border">
+      {visible.map((task) => {
+        const done = task.status === "completed";
+
+        return (
+          <li key={task.id} className="flex items-start gap-3 py-2.5">
+            <Checkbox
+              checked={done}
+              disabled={isPending}
+              onCheckedChange={(checked) => toggle(task, checked === true)}
+              aria-label={done ? t("markOpen") : t("markComplete")}
+              className="mt-0.5"
+            />
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className={cn("text-sm", done && "text-muted-foreground line-through")}>
+                  {task.title}
+                </span>
+
+                {task.priority !== "normal" ? (
+                  <Badge
+                    variant="outline"
+                    className={cn("text-[10px]", PRIORITY_TONE[task.priority])}
+                  >
+                    {t(`priority_${task.priority}`)}
+                  </Badge>
+                ) : null}
+
+                {task.isAutoGenerated ? (
+                  <span
+                    className="text-muted-foreground"
+                    title={t("autoGeneratedHint")}
+                    aria-label={t("autoGeneratedHint")}
+                  >
+                    <SparklesIcon className="size-3.5" />
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <DueBadge dueAt={task.dueAt} timeZone={timeZone} completedAt={task.completedAt} />
+
+                {task.link && !compact ? (
+                  <Link
+                    href={`${LINK_PATH[task.link.kind]}/${task.link.id}`}
+                    className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                  >
+                    {task.link.label || t("untitledLink")}
+                  </Link>
+                ) : null}
+
+                {task.assignee && !compact ? (
+                  <span className="text-xs text-muted-foreground">
+                    {task.assignee.name?.trim() || t("unassigned")}
+                  </span>
+                ) : null}
+              </div>
+
+              {task.description && !compact ? (
+                <p className="mt-1 text-xs whitespace-pre-wrap text-muted-foreground">
+                  {task.description}
+                </p>
+              ) : null}
+
+              <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
+                {onEdit ? (
+                  <button
+                    type="button"
+                    className="underline-offset-4 hover:text-foreground hover:underline"
+                    onClick={() => onEdit(task)}
+                  >
+                    {tCommon("edit")}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  disabled={isPending}
+                  className="underline-offset-4 hover:text-destructive hover:underline"
+                  onClick={() => remove(task)}
+                >
+                  {tCommon("delete")}
+                </button>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}

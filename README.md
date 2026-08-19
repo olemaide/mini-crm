@@ -8,10 +8,10 @@ Build plan: [`../MINI-CRM-MVP-PLAN.md`](../MINI-CRM-MVP-PLAN.md) — read it bef
 adding anything. It sets out the phases, the schema, and the decisions that have
 already been made and closed.
 
-**Current status: Phase 4 complete.** Sign-in, organizations, roles, team
-invitations, contacts, companies, CSV import and the Kanban pipeline work
-against a live Supabase project in `eu-central-1`. The activity feed (Phase 5)
-and tasks (Phase 6) are next.
+**Current status: Phase 7 complete.** Sign-in, organizations, roles, team
+invitations, contacts, companies, CSV import, the Kanban pipeline, the activity
+feed, follow-up tasks and ⌘K search all work against a live Supabase project in
+`eu-central-1`. Billing (Phase 8) is next.
 
 There is **no transactional email provider** — invitations are copyable one-time
 links, and Supabase Auth sends the auth mail. See §1.6 of the plan for what that
@@ -140,6 +140,77 @@ The security model. Read this before touching a policy.
 Invitation tokens are credentials: only a SHA-256 hash is stored, the raw token
 is returned exactly once by `create_invitation()`, and acceptance requires being
 authenticated as the invited address.
+
+### The activity feed
+
+- **A client may only ever insert the four types a human authors** (`note`,
+  `email_logged`, `call_logged`, `meeting_logged`), and only as itself. System
+  rows are written by triggers, which run as the table owner and bypass RLS.
+  Without that restriction anyone could POST a forged `deal_won`.
+- **Every activity has exactly one subject.** `num_nonnulls(contact_id,
+company_id, deal_id) = 1`. Roll-up (a deal's feed showing its contact's
+  entries) happens in the read path, and the constraint is what guarantees the
+  union's branches are disjoint — which is what makes keyset pagination over it
+  correct without de-duplication.
+- **System rows never contain prose.** `body` is null; the sentence is composed
+  at render time from `type` + `metadata`. Stage names are the exception that
+  proves convention 5: they are snapshotted into metadata because they are
+  _stored text_, and snapshotting keeps history readable after a rename or a
+  stage deletion.
+- `guard_activity_edit()` freezes the subject, type, actor and `created_at`. RLS
+  decides _who_ may update; a policy cannot compare OLD to NEW, so without the
+  trigger an author could re-point their note at another record.
+- **Note bodies are the one place a user controls what reaches the DOM.**
+  `parseMarkdownLite` emits a token tree and the renderer builds React elements,
+  so there is no HTML string and nothing to sanitise. `safeHref` allows only
+  `http`, `https` and `mailto`. Both are covered by fixtures — see below.
+
+### Tasks and time
+
+- **Overdue is computed, never stored.** A task is overdue when
+  `status = 'open' AND due_at < now()`, evaluated on every read. An
+  `is_overdue` column would be correct until the clock moved.
+- **`completed_at` is derived by trigger on every write**, and client-supplied
+  values are discarded. It cannot be backdated — a follow-up finished late must
+  not be able to look like it was done on time.
+- **All timezone arithmetic goes through `lib/tasks/due.ts`,** which is pure and
+  takes `now` as an argument. Never `(a - b) / 86_400_000`: across a DST
+  boundary a day is 23 or 25 hours, so the division floors to the wrong day.
+  `date-fns-tz` does the maths, `next-intl` does the formatting, and the two
+  never mix.
+- **Due dates land at 09:00 in the org's timezone, skipping weekends,** computed
+  by `next_business_due_at()`. 09:00 is chosen partly because it always exists —
+  an hour inside 02:00–03:00 is undefined twice a year in `Europe/Berlin`.
+- **Automation can be suppressed for bulk writes** by setting the transaction-
+  local GUC `app.suppress_task_automation` to `'on'`. Absent means "create the
+  task", which is right for the ordinary path; a browser cannot reach the flag.
+- Task titles are **stored text**, seeded once per org locale from
+  `lib/seed/tasks.ts` and never re-translated (convention 5).
+
+### Search
+
+- **`search_key()` folds both sides of every comparison** — lower-case, strip
+  accents, trim. It is applied to the stored value (in a generated column) and
+  to the needle, so the two cannot disagree.
+- **It is `IMMUTABLE` only because the unaccent dictionary is named explicitly**
+  as a `regdictionary`. The plain `unaccent(text)` is `STABLE` and Postgres
+  refuses it in an index expression. Without that trick every search is a scan.
+- **`lib/search/fold.ts` is the TypeScript twin of `search_key()`,** used to fold
+  the needle before it reaches PostgREST. NFD stripping alone is _not_ enough:
+  `ß`, `æ`, `ø`, `þ`, `ł`, `đ` have no decomposition and expand to other
+  letters. The expansion table was transcribed from the database, and the
+  fixtures compare the two — if they drift, search silently finds nothing.
+- **The search columns are `generated always as (...) stored`, not expression
+  indexes.** GIN trigram indexes are lossy, so every candidate row is rechecked;
+  with an expression index that re-ran the unaccent dictionary per row and cost
+  338 ms against 50k contacts, versus 7.9 ms reading a stored column.
+- **`organization_id` is the first column of every search index** (via
+  `btree_gin`), so a scan starts scoped to one tenant instead of filtering
+  afterwards.
+- Needles of one or two characters use the **btree prefix** indexes; three or
+  more use **`LIKE '%needle%'` on GIN**. A single character is refused.
+- Saved views store the **query string**, replayed through the same parsing as a
+  hand-typed URL.
 
 ### Lists and pagination
 

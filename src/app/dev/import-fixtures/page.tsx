@@ -12,7 +12,17 @@ import {
 } from "@/lib/csv";
 import { cn } from "@/lib/utils";
 import { parseMoneyToCents } from "@/lib/money";
+import {
+  DAY_COUNT_CASES,
+  DUE_CASES,
+  RANGE_CASES,
+  runDayCountCase,
+  runDueCase,
+  runRangeCase,
+} from "./due-cases";
 import { FIXTURES, type FixtureExpectation } from "./expectations";
+import { FOLD_CASES, runFoldCase } from "./fold-cases";
+import { HREF_CASES, MARKDOWN_CASES, runHrefCase, runMarkdownCase } from "./markdown-cases";
 import { MONEY_CASES } from "./money-cases";
 
 /* eslint-disable i18next/no-literal-string --
@@ -119,12 +129,77 @@ export default async function ImportFixturesPage() {
     };
   });
 
-  const total = results.reduce((sum, r) => sum + r.checks.length, 0) + moneyChecks.length;
+  const markdownChecks = MARKDOWN_CASES.map((testCase) => {
+    const actual = runMarkdownCase(testCase.input);
+    return { ...testCase, actual, pass: actual === testCase.expected };
+  });
+
+  const hrefChecks = HREF_CASES.map((testCase) => {
+    const actual = runHrefCase(testCase.input);
+    return {
+      input: testCase.input,
+      expected: testCase.expected,
+      actual,
+      pass: actual === testCase.expected,
+      why: testCase.expected === null ? "refused" : "allowed",
+    };
+  });
+
+  const dueChecks = [
+    ...DUE_CASES.map((testCase) => {
+      const actual = runDueCase(testCase);
+      return {
+        input: `${testCase.label} · ${testCase.timeZone}`,
+        expected: testCase.expected,
+        actual,
+        why: testCase.why,
+        pass: actual === testCase.expected,
+      };
+    }),
+    ...RANGE_CASES.map((testCase) => {
+      const actual = runRangeCase(testCase);
+      return {
+        input: `dayRange · ${testCase.label}`,
+        expected: testCase.expected,
+        actual,
+        why: "today's boundaries as UTC instants",
+        pass: actual === testCase.expected,
+      };
+    }),
+    ...DAY_COUNT_CASES.map((testCase) => {
+      const actual = String(runDayCountCase(testCase));
+      return {
+        input: `calendarDaysBetween · ${testCase.label}`,
+        expected: String(testCase.expected),
+        actual,
+        why: testCase.timeZone,
+        pass: actual === String(testCase.expected),
+      };
+    }),
+  ];
+
+  const foldChecks = FOLD_CASES.map((testCase) => {
+    const actual = runFoldCase(testCase.input);
+    return { ...testCase, actual, pass: actual === testCase.expected };
+  });
+
+  const total =
+    results.reduce((sum, r) => sum + r.checks.length, 0) +
+    moneyChecks.length +
+    markdownChecks.length +
+    hrefChecks.length +
+    dueChecks.length +
+    foldChecks.length;
   const failed =
     results.reduce(
       (sum, r) => sum + r.checks.filter((c) => !c.pass).length + (r.fatal ? 1 : 0),
       0,
-    ) + moneyChecks.filter((c) => !c.pass).length;
+    ) +
+    moneyChecks.filter((c) => !c.pass).length +
+    markdownChecks.filter((c) => !c.pass).length +
+    hrefChecks.filter((c) => !c.pass).length +
+    dueChecks.filter((c) => !c.pass).length +
+    foldChecks.filter((c) => !c.pass).length;
 
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
@@ -211,6 +286,124 @@ export default async function ImportFixturesPage() {
                 </td>
                 <td className="px-4 py-1.5 font-mono text-xs text-muted-foreground">
                   {c.pass ? String(c.actual) : `expected ${c.expected} · got ${c.actual}`}
+                </td>
+                <td className="px-4 py-1.5 text-xs text-muted-foreground">{c.why}</td>
+                <td className="w-10 px-4 py-1.5 text-right">{c.pass ? "✓" : "✗"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="rounded-lg border">
+        <div className="flex items-start gap-3 border-b px-4 py-3">
+          <span
+            className={cn(
+              "mt-0.5 inline-block size-2.5 shrink-0 rounded-full",
+              markdownChecks.some((c) => !c.pass) || hrefChecks.some((c) => !c.pass)
+                ? "bg-destructive"
+                : "bg-emerald-500",
+            )}
+          />
+          <div>
+            <h2 className="font-mono text-sm font-medium">parseMarkdownLite &amp; safeHref</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Note bodies are the one place a user controls what reaches the DOM. The parser emits
+              data and the renderer builds React elements, so there is no HTML to sanitise — but the
+              URL allow-list still has to hold. Every case marked XSS must come out as inert text.
+            </p>
+          </div>
+        </div>
+
+        <table className="w-full text-sm">
+          <tbody className="divide-y divide-border">
+            {markdownChecks.map((c, index) => (
+              <tr key={index} className={cn(!c.pass && "bg-destructive/5")}>
+                <td className="px-4 py-1.5 font-mono text-xs">{JSON.stringify(c.input)}</td>
+                <td className="px-4 py-1.5 font-mono text-xs text-muted-foreground">
+                  {c.pass ? c.actual : `expected ${c.expected} · got ${c.actual}`}
+                </td>
+                <td className="px-4 py-1.5 text-xs text-muted-foreground">{c.why}</td>
+                <td className="w-10 px-4 py-1.5 text-right">{c.pass ? "✓" : "✗"}</td>
+              </tr>
+            ))}
+            {hrefChecks.map((c, index) => (
+              <tr key={`href-${index}`} className={cn(!c.pass && "bg-destructive/5")}>
+                <td className="px-4 py-1.5 font-mono text-xs">
+                  safeHref({JSON.stringify(c.input)})
+                </td>
+                <td className="px-4 py-1.5 font-mono text-xs text-muted-foreground">
+                  {c.pass ? String(c.actual) : `expected ${c.expected} · got ${c.actual}`}
+                </td>
+                <td className="px-4 py-1.5 text-xs text-muted-foreground">{c.why}</td>
+                <td className="w-10 px-4 py-1.5 text-right">{c.pass ? "✓" : "✗"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="rounded-lg border">
+        <div className="flex items-start gap-3 border-b px-4 py-3">
+          <span
+            className={cn(
+              "mt-0.5 inline-block size-2.5 shrink-0 rounded-full",
+              dueChecks.some((c) => !c.pass) ? "bg-destructive" : "bg-emerald-500",
+            )}
+          />
+          <div>
+            <h2 className="font-mono text-sm font-medium">task due dates</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Every case pins <code>now</code> explicitly. The DST rows are the point: on 29 March
+              and 25 October a day in Europe/Berlin is 23 or 25 hours, so dividing a millisecond
+              difference by 86,400,000 lands on the wrong day and a task reads &ldquo;due
+              tomorrow&rdquo; on the day it is due.
+            </p>
+          </div>
+        </div>
+
+        <table className="w-full text-sm">
+          <tbody className="divide-y divide-border">
+            {dueChecks.map((c, index) => (
+              <tr key={index} className={cn(!c.pass && "bg-destructive/5")}>
+                <td className="px-4 py-1.5 font-mono text-xs">{c.input}</td>
+                <td className="px-4 py-1.5 font-mono text-xs text-muted-foreground">
+                  {c.pass ? c.actual : `expected ${c.expected} · got ${c.actual}`}
+                </td>
+                <td className="px-4 py-1.5 text-xs text-muted-foreground">{c.why}</td>
+                <td className="w-10 px-4 py-1.5 text-right">{c.pass ? "✓" : "✗"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="rounded-lg border">
+        <div className="flex items-start gap-3 border-b px-4 py-3">
+          <span
+            className={cn(
+              "mt-0.5 inline-block size-2.5 shrink-0 rounded-full",
+              foldChecks.some((c) => !c.pass) ? "bg-destructive" : "bg-emerald-500",
+            )}
+          />
+          <div>
+            <h2 className="font-mono text-sm font-medium">foldForSearch vs search_key</h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              The stored search columns are folded by Postgres; the needle is folded in TypeScript.
+              Every expected value here was recorded from <code>select search_key(…)</code> against
+              the database. If the two rules drift there is no error — searching
+              <code> Größler</code> just silently finds nothing.
+            </p>
+          </div>
+        </div>
+
+        <table className="w-full text-sm">
+          <tbody className="divide-y divide-border">
+            {foldChecks.map((c, index) => (
+              <tr key={index} className={cn(!c.pass && "bg-destructive/5")}>
+                <td className="px-4 py-1.5 font-mono text-xs">{JSON.stringify(c.input)}</td>
+                <td className="px-4 py-1.5 font-mono text-xs text-muted-foreground">
+                  {c.pass ? JSON.stringify(c.actual) : `expected ${c.expected} · got ${c.actual}`}
                 </td>
                 <td className="px-4 py-1.5 text-xs text-muted-foreground">{c.why}</td>
                 <td className="w-10 px-4 py-1.5 text-right">{c.pass ? "✓" : "✗"}</td>

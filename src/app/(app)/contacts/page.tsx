@@ -5,9 +5,12 @@ import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
+import { ListFilters } from "@/components/list/list-filters";
 import { ListPagination } from "@/components/list/list-pagination";
 import { ListSearch } from "@/components/list/list-search";
 import { PageHeader } from "@/components/page-header";
+import { listSavedViews } from "@/features/saved-views/queries";
+import { SavedViews } from "@/features/saved-views/saved-views";
 import { listCompanyOptions } from "@/features/companies/queries";
 import { NewContactDialog } from "@/features/contacts/contact-dialog";
 import { ContactsTable } from "@/features/contacts/contacts-table";
@@ -27,10 +30,11 @@ export default async function ContactsPage({ searchParams }: PageProps<"/contact
   const session = await requireSession();
   const params = parseListParams(await searchParams, contactSortColumns, "created_at");
 
-  const [result, companies, members] = await Promise.all([
+  const [result, companies, members, savedViews] = await Promise.all([
     listContacts({ organizationId: session.organization.id, ...params }),
     listCompanyOptions(session.organization.id),
     getOrganizationMembers(session.organization.id),
+    listSavedViews("contacts"),
   ]);
 
   const companyOptions = companies.map((c) => ({ value: c.id, label: c.name }));
@@ -59,6 +63,14 @@ export default async function ContactsPage({ searchParams }: PageProps<"/contact
 
       <div className="flex flex-col gap-4 p-4 md:p-6">
         <ListSearch placeholder={t("searchPlaceholder")} />
+
+        <ListFilters
+          owners={memberOptions}
+          companies={companyOptions}
+          currentUserId={session.user.id}
+        />
+
+        <SavedViews resource="contacts" views={savedViews} />
 
         {isEmpty ? (
           <EmptyState

@@ -16,8 +16,129 @@ export type Database = {
   };
   public: {
     Tables: {
+      activities: {
+        Row: {
+          actor_id: string | null;
+          body: string | null;
+          company_id: string | null;
+          contact_id: string | null;
+          created_at: string;
+          deal_id: string | null;
+          edited_at: string | null;
+          id: number;
+          metadata: Json;
+          occurred_at: string;
+          organization_id: string;
+          type: Database["public"]["Enums"]["activity_type"];
+          updated_at: string;
+        };
+        Insert: {
+          actor_id?: string | null;
+          body?: string | null;
+          company_id?: string | null;
+          contact_id?: string | null;
+          created_at?: string;
+          deal_id?: string | null;
+          edited_at?: string | null;
+          id?: never;
+          metadata?: Json;
+          occurred_at?: string;
+          organization_id: string;
+          type: Database["public"]["Enums"]["activity_type"];
+          updated_at?: string;
+        };
+        Update: {
+          actor_id?: string | null;
+          body?: string | null;
+          company_id?: string | null;
+          contact_id?: string | null;
+          created_at?: string;
+          deal_id?: string | null;
+          edited_at?: string | null;
+          id?: never;
+          metadata?: Json;
+          occurred_at?: string;
+          organization_id?: string;
+          type?: Database["public"]["Enums"]["activity_type"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "activities_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "activities_company_same_org";
+            columns: ["organization_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "activities_contact_same_org";
+            columns: ["organization_id", "contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "activities_deal_same_org";
+            columns: ["organization_id", "deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "activities_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      automation_settings: {
+        Row: {
+          created_at: string;
+          lead_task_enabled: boolean;
+          lead_task_offset_days: number;
+          lead_task_title: string;
+          organization_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          lead_task_enabled?: boolean;
+          lead_task_offset_days?: number;
+          lead_task_title?: string;
+          organization_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          lead_task_enabled?: boolean;
+          lead_task_offset_days?: number;
+          lead_task_title?: string;
+          organization_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "automation_settings_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: true;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       companies: {
         Row: {
+          search_domain: string | null;
+          search_name: string | null;
           address_line1: string | null;
           city: string | null;
           country: string | null;
@@ -97,6 +218,8 @@ export type Database = {
       };
       contacts: {
         Row: {
+          search_email: string | null;
+          search_name: string | null;
           company_id: string | null;
           created_at: string;
           email: string | null;
@@ -178,53 +301,9 @@ export type Database = {
           },
         ];
       };
-      deal_stage_history: {
-        Row: {
-          changed_at: string;
-          changed_by: string | null;
-          deal_id: string;
-          from_stage_id: string | null;
-          id: number;
-          organization_id: string;
-          to_stage_id: string;
-        };
-        Insert: {
-          changed_at?: string;
-          changed_by?: string | null;
-          deal_id: string;
-          from_stage_id?: string | null;
-          id?: never;
-          organization_id: string;
-          to_stage_id: string;
-        };
-        Update: {
-          changed_at?: string;
-          changed_by?: string | null;
-          deal_id?: string;
-          from_stage_id?: string | null;
-          id?: never;
-          organization_id?: string;
-          to_stage_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "deal_stage_history_deal_id_fkey";
-            columns: ["deal_id"];
-            isOneToOne: false;
-            referencedRelation: "deals";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "deal_stage_history_to_stage_id_fkey";
-            columns: ["to_stage_id"];
-            isOneToOne: false;
-            referencedRelation: "pipeline_stages";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       deals: {
         Row: {
+          search_title: string | null;
           closed_at: string | null;
           company_id: string | null;
           contact_id: string | null;
@@ -660,12 +739,174 @@ export type Database = {
           },
         ];
       };
+      saved_views: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          organization_id: string;
+          query_string: string;
+          resource: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          organization_id: string;
+          query_string?: string;
+          resource: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          organization_id?: string;
+          query_string?: string;
+          resource?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "saved_views_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "saved_views_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tasks: {
+        Row: {
+          assignee_id: string | null;
+          company_id: string | null;
+          completed_at: string | null;
+          contact_id: string | null;
+          created_at: string;
+          created_by: string | null;
+          deal_id: string | null;
+          description: string | null;
+          due_at: string | null;
+          id: string;
+          is_auto_generated: boolean;
+          organization_id: string;
+          priority: Database["public"]["Enums"]["task_priority"];
+          source_rule: string | null;
+          status: Database["public"]["Enums"]["task_status"];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          assignee_id?: string | null;
+          company_id?: string | null;
+          completed_at?: string | null;
+          contact_id?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          deal_id?: string | null;
+          description?: string | null;
+          due_at?: string | null;
+          id?: string;
+          is_auto_generated?: boolean;
+          organization_id: string;
+          priority?: Database["public"]["Enums"]["task_priority"];
+          source_rule?: string | null;
+          status?: Database["public"]["Enums"]["task_status"];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          assignee_id?: string | null;
+          company_id?: string | null;
+          completed_at?: string | null;
+          contact_id?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          deal_id?: string | null;
+          description?: string | null;
+          due_at?: string | null;
+          id?: string;
+          is_auto_generated?: boolean;
+          organization_id?: string;
+          priority?: Database["public"]["Enums"]["task_priority"];
+          source_rule?: string | null;
+          status?: Database["public"]["Enums"]["task_status"];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_id_fkey";
+            columns: ["assignee_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_company_same_org";
+            columns: ["organization_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "tasks_contact_same_org";
+            columns: ["organization_id", "contact_id"];
+            isOneToOne: false;
+            referencedRelation: "contacts";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_deal_same_org";
+            columns: ["organization_id", "deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "tasks_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string };
+      activity_feed: {
+        Args: {
+          p_before_id?: number;
+          p_before_occurred_at?: string;
+          p_limit?: number;
+          p_subject_id: string;
+          p_subject_type: string;
+          p_types?: Database["public"]["Enums"]["activity_type"][];
+        };
+        Returns: Json;
+      };
       create_invitation: {
         Args: {
           p_email: string;
@@ -691,9 +932,29 @@ export type Database = {
       create_organization: {
         Args: {
           p_currency?: string;
+          p_lead_task_title?: string;
           p_locale?: string;
           p_name: string;
           p_timezone?: string;
+        };
+        Returns: string;
+      };
+      global_search: {
+        Args: {
+          p_limit?: number;
+          p_organization_id: string;
+          p_query: string;
+        };
+        Returns: Json;
+      };
+      immutable_unaccent: { Args: { p_value: string }; Returns: string };
+      search_key: { Args: { p_value: string }; Returns: string };
+      next_business_due_at: {
+        Args: {
+          p_from: string;
+          p_hour?: number;
+          p_offset_days?: number;
+          p_timezone: string;
         };
         Returns: string;
       };
@@ -756,11 +1017,28 @@ export type Database = {
       undo_import_job: { Args: { p_job_id: string }; Returns: Json };
     };
     Enums: {
+      activity_type:
+        | "note"
+        | "email_logged"
+        | "call_logged"
+        | "meeting_logged"
+        | "stage_changed"
+        | "deal_created"
+        | "deal_won"
+        | "deal_lost"
+        | "contact_created"
+        | "company_created"
+        | "task_created"
+        | "task_completed"
+        | "field_changed"
+        | "import";
       contact_source: "manual" | "csv" | "api";
       deal_status: "open" | "won" | "lost";
       import_duplicate_policy: "skip" | "update" | "create";
       import_status: "pending" | "running" | "completed" | "failed" | "cancelled" | "rolled_back";
       org_role: "owner" | "admin" | "member";
+      task_priority: "low" | "normal" | "high";
+      task_status: "open" | "completed" | "cancelled";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -866,11 +1144,29 @@ export type Enums<
 export const Constants = {
   public: {
     Enums: {
+      activity_type: [
+        "note",
+        "email_logged",
+        "call_logged",
+        "meeting_logged",
+        "stage_changed",
+        "deal_created",
+        "deal_won",
+        "deal_lost",
+        "contact_created",
+        "company_created",
+        "task_created",
+        "task_completed",
+        "field_changed",
+        "import",
+      ],
       contact_source: ["manual", "csv", "api"],
       deal_status: ["open", "won", "lost"],
       import_duplicate_policy: ["skip", "update", "create"],
       import_status: ["pending", "running", "completed", "failed", "cancelled", "rolled_back"],
       org_role: ["owner", "admin", "member"],
+      task_priority: ["low", "normal", "high"],
+      task_status: ["open", "completed", "cancelled"],
     },
   },
 } as const;

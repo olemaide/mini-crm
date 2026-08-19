@@ -20,6 +20,8 @@ import { NewCompanyDialog } from "@/features/companies/company-dialog";
 import { listCompanies } from "@/features/companies/queries";
 import { companySortColumns } from "@/features/companies/schema";
 import { getOrganizationMembers } from "@/features/organizations/queries";
+import { listSavedViews } from "@/features/saved-views/queries";
+import { SavedViews } from "@/features/saved-views/saved-views";
 import { requireSession } from "@/lib/auth/session";
 import { hasActiveFilters, parseListParams } from "@/lib/list-params";
 
@@ -35,9 +37,10 @@ export default async function CompaniesPage({ searchParams }: PageProps<"/compan
   const session = await requireSession();
   const params = parseListParams(await searchParams, companySortColumns, "created_at");
 
-  const [result, members] = await Promise.all([
+  const [result, members, savedViews] = await Promise.all([
     listCompanies({ organizationId: session.organization.id, ...params }),
     getOrganizationMembers(session.organization.id),
+    listSavedViews("companies"),
   ]);
 
   const memberOptions = members.map((m) => ({
@@ -54,6 +57,8 @@ export default async function CompaniesPage({ searchParams }: PageProps<"/compan
 
       <div className="flex flex-col gap-4 p-4 md:p-6">
         <ListSearch placeholder={t("searchPlaceholder")} />
+
+        <SavedViews resource="companies" views={savedViews} />
 
         {isEmpty ? (
           <EmptyState

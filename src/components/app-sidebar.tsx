@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { OrgSwitcher } from "@/components/org-switcher";
+import { SearchPalette } from "@/features/search/search-palette";
 import { UserMenu } from "@/components/user-menu";
 import type { Membership, Organization, OrgRole } from "@/lib/auth/session";
 import {
@@ -57,11 +58,14 @@ export function AppSidebar({
   memberships,
   role,
   user,
+  overdueTaskCount,
 }: {
   organization: Organization;
   memberships: Membership[];
   role: OrgRole;
   user: { fullName: string | null; email: string; avatarUrl: string | null };
+  /** Tasks assigned to this user, past due. Zero hides the badge entirely. */
+  overdueTaskCount: number;
 }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
@@ -74,6 +78,11 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Hidden when collapsed to icons; ⌘K still works from anywhere. */}
+        <div className="px-2 group-data-[collapsible=icon]:hidden">
+          <SearchPalette />
+        </div>
+
         <SidebarGroup>
           <SidebarGroupLabel>{t("sectionMain")}</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -82,15 +91,24 @@ export function AppSidebar({
                 const label = t(item.labelKey);
                 const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
+                const badge = item.labelKey === "tasks" ? overdueTaskCount : 0;
+
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       isActive={isActive}
-                      tooltip={label}
+                      // The count belongs in the tooltip too, or it disappears
+                      // entirely when the sidebar is collapsed to icons.
+                      tooltip={badge > 0 ? `${label} (${badge})` : label}
                       render={<Link href={item.href} />}
                     >
                       <item.icon />
                       <span>{label}</span>
+                      {badge > 0 ? (
+                        <span className="ml-auto rounded-full bg-destructive/10 px-1.5 py-0.5 text-[10px] leading-none font-semibold text-destructive group-data-[collapsible=icon]:hidden">
+                          {badge > 99 ? "99+" : badge}
+                        </span>
+                      ) : null}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );

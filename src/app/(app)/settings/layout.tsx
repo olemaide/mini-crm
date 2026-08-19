@@ -15,6 +15,7 @@ export default async function SettingsLayout({ children }: LayoutProps<"/setting
             profile: t("tabProfile"),
             organization: t("tabOrganization"),
             members: t("tabMembers"),
+            automation: t("tabAutomation"),
           }}
         />
         {children}

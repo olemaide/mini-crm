@@ -5,13 +5,17 @@ import { getFormatter, getNow, getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ActivityFeed } from "@/features/activities/activity-feed";
+import { getActivityFeed } from "@/features/activities/queries";
 import { listCompanyOptions } from "@/features/companies/queries";
 import { listContacts } from "@/features/contacts/queries";
 import { DealDetailActions } from "@/features/deals/deal-dialog";
 import { getDeal, listStages } from "@/features/deals/queries";
 import { getOrganizationMembers } from "@/features/organizations/queries";
-import { requireSession } from "@/lib/auth/session";
+import { listTasksFor } from "@/features/tasks/queries";
+import { TaskWidget } from "@/features/tasks/task-widget";
+import { isAtLeastAdmin, requireSession } from "@/lib/auth/session";
 import { centsToMajorUnit } from "@/lib/money";
 
 export async function generateMetadata({ params }: PageProps<"/deals/[id]">): Promise<Metadata> {
@@ -24,6 +28,7 @@ export async function generateMetadata({ params }: PageProps<"/deals/[id]">): Pr
 export default async function DealDetailPage({ params }: PageProps<"/deals/[id]">) {
   const t = await getTranslations("pipeline");
   const tContacts = await getTranslations("contacts");
+  const tTasks = await getTranslations("tasks");
   const format = await getFormatter();
   const session = await requireSession();
   const { id } = await params;
@@ -31,7 +36,7 @@ export default async function DealDetailPage({ params }: PageProps<"/deals/[id]"
   const deal = await getDeal(session.organization.id, id);
   if (!deal) notFound();
 
-  const [stages, contactPage, companies, members] = await Promise.all([
+  const [stages, contactPage, companies, members, feed, tasks] = await Promise.all([
     listStages(session.organization.id, deal.pipelineId),
     listContacts({
       organizationId: session.organization.id,
@@ -42,6 +47,8 @@ export default async function DealDetailPage({ params }: PageProps<"/deals/[id]"
     }),
     listCompanyOptions(session.organization.id),
     getOrganizationMembers(session.organization.id),
+    getActivityFeed("deal", deal.id),
+    listTasksFor(session.organization.id, { dealId: deal.id }),
   ]);
 
   const money = (cents: number) =>
@@ -194,12 +201,20 @@ export default async function DealDetailPage({ params }: PageProps<"/deals/[id]"
             </CardContent>
           </Card>
 
-          {/* Placeholders so the page shape is settled before Phases 5 and 6. */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">{tContacts("feedTitle")}</CardTitle>
-              <CardDescription>{tContacts("feedComingSoon")}</CardDescription>
             </CardHeader>
+            <CardContent>
+              <ActivityFeed
+                subjectKind="deal"
+                subjectId={deal.id}
+                initialPage={feed}
+                currentUserId={session.user.id}
+                canModerate={isAtLeastAdmin(session.role)}
+                timeZone={session.organization.timezone}
+              />
+            </CardContent>
           </Card>
         </div>
 
@@ -233,9 +248,19 @@ export default async function DealDetailPage({ params }: PageProps<"/deals/[id]"
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{tContacts("tasksTitle")}</CardTitle>
-              <CardDescription>{tContacts("tasksComingSoon")}</CardDescription>
+              <CardTitle className="text-base">{tTasks("openTasks")}</CardTitle>
             </CardHeader>
+            <CardContent>
+              <TaskWidget
+                tasks={tasks}
+                members={members.map((member) => ({
+                  value: member.userId,
+                  label: member.fullName?.trim() || tContacts("unnamed"),
+                }))}
+                timeZone={session.organization.timezone}
+                link={{ dealId: deal.id }}
+              />
+            </CardContent>
           </Card>
         </div>
       </div>

@@ -6,11 +6,15 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ActivityFeed } from "@/features/activities/activity-feed";
+import { getActivityFeed } from "@/features/activities/queries";
 import { listCompanyOptions } from "@/features/companies/queries";
 import { ContactDetailActions } from "@/features/contacts/contact-detail-actions";
 import { getContact } from "@/features/contacts/queries";
 import { getOrganizationMembers } from "@/features/organizations/queries";
-import { requireSession } from "@/lib/auth/session";
+import { listTasksFor } from "@/features/tasks/queries";
+import { TaskWidget } from "@/features/tasks/task-widget";
+import { isAtLeastAdmin, requireSession } from "@/lib/auth/session";
 
 export async function generateMetadata({ params }: PageProps<"/contacts/[id]">): Promise<Metadata> {
   const session = await requireSession();
@@ -24,6 +28,7 @@ export async function generateMetadata({ params }: PageProps<"/contacts/[id]">):
 
 export default async function ContactDetailPage({ params }: PageProps<"/contacts/[id]">) {
   const t = await getTranslations("contacts");
+  const tTasks = await getTranslations("tasks");
   const format = await getFormatter();
   const session = await requireSession();
   const { id } = await params;
@@ -33,9 +38,11 @@ export default async function ContactDetailPage({ params }: PageProps<"/contacts
   // them indistinguishable here, which is exactly what we want.
   if (!contact) notFound();
 
-  const [companies, members] = await Promise.all([
+  const [companies, members, feed, tasks] = await Promise.all([
     listCompanyOptions(session.organization.id),
     getOrganizationMembers(session.organization.id),
+    getActivityFeed("contact", contact.id),
+    listTasksFor(session.organization.id, { contactId: contact.id }),
   ]);
 
   const companyOptions = companies.map((c) => ({ value: c.id, label: c.name }));
@@ -138,12 +145,20 @@ export default async function ContactDetailPage({ params }: PageProps<"/contacts
             </CardContent>
           </Card>
 
-          {/* Placeholders so the page shape is settled before Phases 4–6 fill it. */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">{t("feedTitle")}</CardTitle>
-              <CardDescription>{t("feedComingSoon")}</CardDescription>
             </CardHeader>
+            <CardContent>
+              <ActivityFeed
+                subjectKind="contact"
+                subjectId={contact.id}
+                initialPage={feed}
+                currentUserId={session.user.id}
+                canModerate={isAtLeastAdmin(session.role)}
+                timeZone={session.organization.timezone}
+              />
+            </CardContent>
           </Card>
         </div>
 
@@ -172,6 +187,20 @@ export default async function ContactDetailPage({ params }: PageProps<"/contacts
                   })}
                 </p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{tTasks("openTasks")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TaskWidget
+                tasks={tasks}
+                members={memberOptions}
+                timeZone={session.organization.timezone}
+                link={{ contactId: contact.id }}
+              />
             </CardContent>
           </Card>
 

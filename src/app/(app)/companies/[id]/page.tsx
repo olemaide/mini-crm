@@ -5,11 +5,15 @@ import { getFormatter, getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ActivityFeed } from "@/features/activities/activity-feed";
+import { getActivityFeed } from "@/features/activities/queries";
 import { CompanyDetailActions } from "@/features/companies/company-dialog";
 import { getCompany } from "@/features/companies/queries";
 import { listContactsForCompany } from "@/features/contacts/queries";
 import { getOrganizationMembers } from "@/features/organizations/queries";
-import { requireSession } from "@/lib/auth/session";
+import { listTasksFor } from "@/features/tasks/queries";
+import { TaskWidget } from "@/features/tasks/task-widget";
+import { isAtLeastAdmin, requireSession } from "@/lib/auth/session";
 
 export async function generateMetadata({
   params,
@@ -23,6 +27,7 @@ export async function generateMetadata({
 export default async function CompanyDetailPage({ params }: PageProps<"/companies/[id]">) {
   const t = await getTranslations("companies");
   const tContacts = await getTranslations("contacts");
+  const tTasks = await getTranslations("tasks");
   const format = await getFormatter();
   const session = await requireSession();
   const { id } = await params;
@@ -30,9 +35,11 @@ export default async function CompanyDetailPage({ params }: PageProps<"/companie
   const company = await getCompany(session.organization.id, id);
   if (!company) notFound();
 
-  const [contacts, members] = await Promise.all([
+  const [contacts, members, feed, tasks] = await Promise.all([
     listContactsForCompany(session.organization.id, company.id),
     getOrganizationMembers(session.organization.id),
+    getActivityFeed("company", company.id),
+    listTasksFor(session.organization.id, { companyId: company.id }),
   ]);
 
   const memberOptions = members.map((m) => ({
@@ -172,6 +179,23 @@ export default async function CompanyDetailPage({ params }: PageProps<"/companie
               )}
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{tContacts("feedTitle")}</CardTitle>
+              <CardDescription>{t("feedRollUp")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ActivityFeed
+                subjectKind="company"
+                subjectId={company.id}
+                initialPage={feed}
+                currentUserId={session.user.id}
+                canModerate={isAtLeastAdmin(session.role)}
+                timeZone={session.organization.timezone}
+              />
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-6">
@@ -193,6 +217,20 @@ export default async function CompanyDetailPage({ params }: PageProps<"/companie
                   })}
                 </p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{tTasks("openTasks")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TaskWidget
+                tasks={tasks}
+                members={memberOptions}
+                timeZone={session.organization.timezone}
+                link={{ companyId: company.id }}
+              />
             </CardContent>
           </Card>
 

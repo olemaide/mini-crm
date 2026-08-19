@@ -17,12 +17,13 @@ const TABS = [
   { href: "/settings", key: "profile" },
   { href: "/settings/organization", key: "organization" },
   { href: "/settings/members", key: "members" },
+  { href: "/settings/automation", key: "automation" },
 ] as const;
 
 export function SettingsTabs({
   labels,
 }: {
-  labels: Record<"profile" | "organization" | "members", string>;
+  labels: Record<"profile" | "organization" | "members" | "automation", string>;
 }) {
   const pathname = usePathname();
 

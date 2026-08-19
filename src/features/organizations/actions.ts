@@ -18,6 +18,7 @@ import {
   ACTIVE_ORG_COOKIE_MAX_AGE,
   AFTER_LOGIN_PATH,
 } from "@/lib/auth/constants";
+import { defaultLeadTaskTitle } from "@/lib/seed/tasks";
 import { getMemberships, getSession, isAtLeastAdmin, requireSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE } from "@/i18n/config";
@@ -62,12 +63,17 @@ export async function createOrganization(input: unknown): Promise<ActionResult<{
     } = await supabase.auth.getUser();
     if (!user) return fail("notAuthenticated");
 
-    // The RPC creates the org and installs the caller as owner atomically.
+    // The RPC creates the org, installs the caller as owner and seeds the
+    // automation settings atomically. The task title is passed in rather than
+    // chosen in SQL so the seed catalogue stays in TypeScript alongside the
+    // pipeline stage names — it is stored text in the org's language, never a
+    // translation key (§1.5 rule 3).
     const { data, error } = await supabase.rpc("create_organization", {
       p_name: parsed.data.name,
       p_locale: parsed.data.locale,
       p_timezone: parsed.data.timezone,
       p_currency: parsed.data.currency,
+      p_lead_task_title: defaultLeadTaskTitle(parsed.data.locale),
     });
 
     if (error || !data) {

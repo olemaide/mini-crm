@@ -1,5 +1,8 @@
+import { getNow } from "next-intl/server";
+
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { getTaskCounts } from "@/features/tasks/queries";
 import { requireSession } from "@/lib/auth/session";
 
 /**
@@ -14,6 +17,23 @@ import { requireSession } from "@/lib/auth/session";
  */
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const session = await requireSession();
+  const now = await getNow();
+
+  /*
+   * The overdue badge is queried per request, not cached.
+   *
+   * The build plan called for a 60-second cache, but the number is specific to
+   * one user in one tenant, and a cache keyed on neither is precisely the shape
+   * that leaks one organization's data into another's page. It is a single
+   * `count` over a partial index — cheaper than the cache lookup would be, and
+   * it is never wrong by up to a minute.
+   */
+  const counts = await getTaskCounts(
+    session.organization.id,
+    session.organization.timezone,
+    now,
+    session.user.id,
+  );
 
   return (
     <SidebarProvider>
@@ -26,6 +46,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           email: session.user.email ?? "",
           avatarUrl: session.profile?.avatarUrl ?? null,
         }}
+        overdueTaskCount={counts.overdue}
       />
       <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>

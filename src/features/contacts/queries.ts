@@ -1,5 +1,6 @@
 import "server-only";
 
+import { foldForSearch } from "@/lib/search/fold";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 import type { ContactSortColumn } from "./schema";
@@ -34,6 +35,10 @@ export type ContactListParams = {
   query?: string | null;
   ownerId?: string | null;
   companyId?: string | null;
+  source?: Database["public"]["Enums"]["contact_source"] | null;
+  hasEmail?: boolean | null;
+  createdFrom?: string | null;
+  createdTo?: string | null;
 };
 
 export type ContactListResult = {
@@ -76,20 +81,39 @@ export async function listContacts(params: ContactListParams): Promise<ContactLi
     .select(LIST_SELECT, { count: "exact" })
     .eq("organization_id", organizationId);
 
+  // Every filter is an additional `eq`/`gte`/`lte` on the same request, so they
+  // combine with AND. Absent ones are simply never applied.
   if (params.ownerId) request = request.eq("owner_id", params.ownerId);
   if (params.companyId) request = request.eq("company_id", params.companyId);
+  if (params.source) request = request.eq("source", params.source);
+  if (params.hasEmail === true) request = request.not("email", "is", null);
+  if (params.hasEmail === false) request = request.is("email", null);
+  if (params.createdFrom) request = request.gte("created_at", `${params.createdFrom}T00:00:00Z`);
+  // Exclusive upper bound on the following day, so the whole end date is
+  // included rather than only its first instant.
+  if (params.createdTo) {
+    const next = new Date(`${params.createdTo}T00:00:00Z`);
+    next.setUTCDate(next.getUTCDate() + 1);
+    request = request.lt("created_at", next.toISOString());
+  }
 
   const search = params.query?.trim();
   if (search) {
-    // Escape PostgREST's `or` grammar before interpolating: a bare comma or
-    // parenthesis in the search box would otherwise be parsed as filter syntax.
-    const safe = search.replace(/[,()\\]/g, " ").trim();
+    /*
+     * Searches the stored, accent-folded columns rather than the raw ones.
+     *
+     * This is what makes the list box agree with ⌘K: typing `muller` finds
+     * `Müller` in both, and both use the same GIN indexes. The needle is folded
+     * client-side by the same rule the columns were generated with.
+     *
+     * PostgREST's `or` grammar still has to be escaped — a bare comma or
+     * parenthesis would otherwise be read as filter syntax.
+     */
+    const safe = foldForSearch(search)
+      .replace(/[,()\\*]/g, " ")
+      .trim();
     if (safe) {
-      request = request.or(
-        [`first_name.ilike.*${safe}*`, `last_name.ilike.*${safe}*`, `email.ilike.*${safe}*`].join(
-          ",",
-        ),
-      );
+      request = request.or([`search_name.like.*${safe}*`, `search_email.like.*${safe}*`].join(","));
     }
   }
 
