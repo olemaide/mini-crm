@@ -7,6 +7,14 @@
   PNPM_VERSION = "11"
   # Netlify installs @netlify/plugin-nextjs automatically for Next.js sites.
 
+# Netlify's post-processing must stay off. Its "pretty URLs" rewriter 308s every
+# path to a trailing-slash variant, which Next.js (trailingSlash: false) then
+# 307s straight back — an infinite loop that makes the whole site, and every
+# /api route with it, unreachable. Webhook senders do not follow redirects on
+# POST, so Polar just records the 308 and marks the delivery failed.
+[build.processing]
+  skip_processing = true
+
 # Staging must never be indexed. Deploy previews and branch deploys share this.
 [[context.deploy-preview.headers]]
   for = "/*"
