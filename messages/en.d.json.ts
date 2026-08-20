@@ -2,689 +2,689 @@
 // See: https://next-intl.dev/docs/workflows/typescript#messages-arguments
 
 declare const messages: {
-  "common": {
-    "appName": "Mini CRM",
-    "appTagline": "Import your contacts, see every deal on one board, and never forget a follow-up.",
-    "save": "Save",
-    "saved": "Saved.",
-    "saving": "Saving…",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "remove": "Remove",
-    "edit": "Edit",
-    "create": "Create",
-    "copy": "Copy",
-    "copied": "Copied",
-    "close": "Close",
-    "search": "Search",
-    "searchPlaceholder": "Search contacts, companies, deals…",
-    "loading": "Loading…",
-    "retry": "Try again",
-    "comingSoon": "Coming soon",
-    "phaseBadge": "Phase {phase}",
-    "you": "You",
-    "undo": "Undo"
-  },
-  "nav": {
-    "sectionMain": "Workspace",
-    "dashboard": "Dashboard",
-    "contacts": "Contacts",
-    "companies": "Companies",
-    "pipeline": "Pipeline",
-    "tasks": "Tasks",
-    "settings": "Settings",
-    "toggleSidebar": "Toggle sidebar"
-  },
-  "list": {
-    "showing": "Showing {from}–{to} of {total}",
-    "rowsPerPage": "Rows per page",
-    "pageOf": "Page {page} of {pageCount}",
-    "previousPage": "Previous page",
-    "nextPage": "Next page"
-  },
-  "search": {
-    "placeholder": "Search…",
-    "shortcut": "⌘K",
-    "title": "Search",
-    "description": "Find a contact, company or deal.",
-    "inputPlaceholder": "Search contacts, companies and deals…",
-    "typeToSearch": "Type at least two characters.",
-    "searching": "Searching…",
-    "noResults": "Nothing found.",
-    "recent": "Recent",
-    "group_contact": "Contacts",
-    "group_company": "Companies",
-    "group_deal": "Deals",
-    "unnamed": "Unnamed"
-  },
-  "filters": {
-    "owner": "Owner",
-    "mine": "Mine",
-    "company": "Company",
-    "any": "Any",
-    "source": "Source",
-    "email": "Email",
-    "hasEmail": "Has one",
-    "noEmail": "Missing",
-    "created": "Created",
-    "createdFrom": "Created from",
-    "createdTo": "Created until",
-    "to": "to",
-    "clear": "Clear filters",
-    "saveView": "Save view",
-    "saveViewHint": "Saves the current filters under a name, just for you.",
-    "viewName": "View name",
-    "viewNamePlaceholder": "e.g. My open leads",
-    "viewSaved": "View saved",
-    "viewDeleted": "View deleted",
-    "deleteView": "Delete the view {name}"
-  },
-  "locale": {
-    "label": "Language",
-    "change": "Change language"
-  },
-  "home": {
-    "eyebrow": "Phase 4 · Pipeline",
-    "heading": "The CRM shell is standing up",
-    "body": "Sign-in, organizations, contacts, companies, CSV import and the pipeline board are live. The activity feed and tasks arrive next.",
-    "openApp": "Open the app",
-    "signIn": "Sign in",
-    "healthCheck": "Health check"
-  },
-  "auth": {
-    "signInTitle": "Sign in",
-    "signInSubtitle": "Welcome back.",
-    "signUpTitle": "Create your account",
-    "signUpSubtitle": "Two minutes and you have a working CRM.",
-    "forgotTitle": "Reset your password",
-    "forgotSubtitle": "We will email you a link to choose a new one.",
-    "resetTitle": "Choose a new password",
-    "resetSubtitle": "Pick something you have not used elsewhere.",
-    "emailLabel": "Email",
-    "emailPlaceholder": "you@company.com",
-    "passwordLabel": "Password",
-    "newPasswordLabel": "New password",
-    "fullNameLabel": "Full name",
-    "fullNamePlaceholder": "Alex Weber",
-    "signInAction": "Sign in",
-    "signUpAction": "Create account",
-    "sendResetAction": "Send reset link",
-    "updatePasswordAction": "Update password",
-    "sendMagicLinkAction": "Email me a sign-in link",
-    "orDivider": "or",
-    "noAccount": "No account yet?",
-    "haveAccount": "Already have an account?",
-    "forgotPassword": "Forgot your password?",
-    "backToSignIn": "Back to sign in",
-    "signOut": "Sign out",
-    "checkYourEmail": "Check your email",
-    "confirmationSent": "We sent a confirmation link to {email}. Open it to finish signing up.",
-    "magicLinkSent": "If that address has an account, a sign-in link is on its way.",
-    "resetLinkSent": "If that address has an account, a reset link is on its way.",
-    "passwordUpdated": "Your password has been updated.",
-    "passwordHint": "At least 8 characters."
-  },
-  "onboarding": {
-    "title": "Create your organization",
-    "subtitle": "Everything in the CRM belongs to an organization. You can invite your colleagues once it exists.",
-    "nameLabel": "Organization name",
-    "namePlaceholder": "Acme GmbH",
-    "localeLabel": "Default language",
-    "localeHint": "Sets the language of content we create for you, such as pipeline stage names. Each person can still choose their own interface language.",
-    "timezoneLabel": "Time zone",
-    "currencyLabel": "Currency",
-    "createAction": "Create organization",
-    "signedInAs": "Signed in as {email}"
-  },
-  "organization": {
-    "switcherLabel": "Organization",
-    "switchAction": "Switch organization",
-    "settingsTitle": "Organization",
-    "settingsSubtitle": "Name, language and formatting defaults for everyone in this workspace.",
-    "nameLabel": "Name",
-    "localeLabel": "Default language",
-    "timezoneLabel": "Time zone",
-    "currencyLabel": "Currency",
-    "currencyHint": "Three-letter ISO code, for example EUR or CHF.",
-    "saved": "Organization updated.",
-    "adminOnly": "Only admins and owners can change these settings."
-  },
-  "members": {
-    "title": "Members",
-    "subtitle": "People with access to this organization.",
-    "inviteAction": "Invite member",
-    "inviteTitle": "Invite a member",
-    "inviteSubtitle": "We generate a one-time link. Send it to them yourself — by email, chat, however you like.",
-    "emailLabel": "Email",
-    "roleLabel": "Role",
-    "createInviteAction": "Create invite link",
-    "linkReady": "Invite link ready",
-    "linkExplainer": "Copy this now. It is shown once and cannot be recovered — only a hash is stored. It expires in 7 days and only works for {email}.",
-    "pendingTitle": "Pending invitations",
-    "pendingEmpty": "No pending invitations.",
-    "expired": "Expired",
-    "expiresOn": "Expires {date}",
-    "revokeAction": "Revoke",
-    "joinedOn": "Joined {date}",
-    "unnamed": "Unnamed",
-    "removeAction": "Remove from organization",
-    "leaveAction": "Leave organization",
-    "changeRoleAction": "Change role",
-    "roleOwner": "Owner",
-    "roleAdmin": "Admin",
-    "roleMember": "Member",
-    "roleOwnerHint": "Full control, including billing and deleting the organization.",
-    "roleAdminHint": "Manage members and all data. No billing access.",
-    "roleMemberHint": "Work with all data. Cannot manage members.",
-    "memberOnlyView": "Only admins and owners can manage members."
-  },
-  "invite": {
-    "title": "Join {organization}",
-    "subtitle": "You have been invited to collaborate.",
-    "acceptAction": "Accept invitation",
-    "signInFirstTitle": "Sign in to accept",
-    "signInFirstBody": "This invitation is tied to a specific email address. Sign in or create an account with that address, then open the link again.",
-    "invalidTitle": "This invitation is not valid",
-    "invalidBody": "It may have expired, been revoked, or already been used. Ask whoever invited you for a fresh link.",
-    "wrongEmailTitle": "Wrong account",
-    "wrongEmailBody": "This invitation was issued for a different email address. Sign out and sign in with the invited address.",
-    "accepted": "You have joined the organization."
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "A read-only preview. Real figures arrive with the pipeline in Phase 4.",
-    "openDeals": "Open deals",
-    "pipelineValue": "Pipeline value",
-    "weightedValue": "Weighted value",
-    "overdueTasks": "Overdue tasks",
-    "sampleNotice": "Sample data — these values are hardcoded to verify locale-aware formatting.",
-    "lastUpdated": "Last updated {date}",
-    "overdueCount": "{count, plural, =0 {Nothing overdue} one {# task overdue} other {# tasks overdue}}"
-  },
-  "import": {
-    "title": "Import contacts",
-    "backToContacts": "Back to contacts",
-    "uploadTitle": "Choose a file",
-    "uploadSubtitle": "A CSV export from your old CRM, Excel, or Google Sheets.",
-    "dropHere": "Drop your CSV here",
-    "uploadHint": "Up to 10 MB and 20,000 rows. Comma, semicolon or tab separated — we work it out.",
-    "chooseFile": "Choose file",
-    "templatePrompt": "Not sure how to lay out your file?",
-    "templateDownload": "Download an example CSV",
-    "templateHint": "Only a name or an email address is required — every other column is optional, and you can leave out columns you do not have.",
-    "mapTitle": "Match your columns",
-    "mapSubtitle": "{rows} rows · detected {encoding}, separated by {delimiter}",
-    "tab": "tab",
-    "columnHeader": "Column in your file",
-    "firstValues": "First values",
-    "mapsTo": "Import as",
-    "ignoreColumn": "Do not import",
-    "raggedRows": "{count, plural, one {# row has} other {# rows have}} the wrong number of columns and may be misread — check rows {rows}. This usually means a quote is not closed.",
-    "continue": "Continue",
-    "back": "Back",
-    "previewTitle": "Check before importing",
-    "previewSubtitle": "Nothing has been written yet. The first 20 rows are shown below.",
-    "statValid": "Will import",
-    "statExisting": "Already in your CRM",
-    "statInFile": "Duplicates in file",
-    "statErrors": "Cannot import",
-    "statCreated": "Created",
-    "statUpdated": "Updated",
-    "statSkipped": "Skipped",
-    "status": "Status",
-    "willImport": "Will import",
-    "policyLabel": "When a contact already exists",
-    "policy_skip": "Keep what I have",
-    "policy_update": "Update with the file",
-    "policy_create": "Import anyway",
-    "policyHint_skip": "The existing contact is left exactly as it is.",
-    "policyHint_update": "Filled-in cells overwrite existing values. Blank cells never erase anything.",
-    "policyHint_create": "Email addresses must be unique, so matching contacts are skipped rather than duplicated.",
-    "createCompaniesLabel": "Create companies that do not exist yet",
-    "noTasksNote": "No follow-up tasks are created by an import. You can add them once tasks arrive in Phase 6.",
-    "startImport": "Import {count, plural, one {# contact} other {# contacts}}",
-    "runningTitle": "Importing",
-    "runningSubtitle": "Keep this tab open until it finishes.",
-    "progress": "{percent}% complete",
-    "doneTitle": "Import finished",
-    "doneSubtitle": "You can undo this run from the history below.",
-    "doneToast": "Contacts imported.",
-    "downloadErrors": "Download error report",
-    "importAnother": "Import another file",
-    "viewContacts": "View contacts",
-    "errorCsvRow": "Row",
-    "errorCsvProblem": "Problem",
-    "errorCsvDetail": "Detail",
-    "historyTitle": "Recent imports",
-    "historyEmpty": "No imports yet.",
-    "historyCounts": "{created} created · {updated} updated · {skipped} skipped · {errors} failed",
-    "undo": "Undo",
-    "confirmUndo": "Delete the {count, plural, one {# contact} other {# contacts}} this import created? Contacts it merely updated keep their new values — those cannot be restored.",
-    "undoneToast": "Removed {contacts} contacts and {companies} companies.",
-    "status_pending": "Pending",
-    "status_running": "Running",
-    "status_completed": "Completed",
-    "status_failed": "Failed",
-    "status_cancelled": "Cancelled",
-    "status_rolled_back": "Undone",
-    "field_first_name": "First name",
-    "field_last_name": "Last name",
-    "field_full_name": "Full name",
-    "field_email": "Email",
-    "field_phone": "Phone",
-    "field_job_title": "Job title",
-    "field_company_name": "Company",
-    "field_company_domain": "Company domain",
-    "field_linkedin_url": "LinkedIn",
-    "field_notes": "Notes",
-    "invalidEmail": "Invalid email",
-    "missingIdentity": "No name or email",
-    "duplicateInFile": "Duplicate in file",
-    "duplicateEmail": "Already exists",
-    "invalidValue": "Invalid value",
-    "valueTooLong": "Value too long",
-    "ownerNotMember": "Owner is not a member",
-    "unknown": "Could not import"
-  },
-  "contacts": {
-    "title": "Contacts",
-    "action": "Add contact",
-    "importAction": "Import",
-    "searchPlaceholder": "Search by name or email…",
-    "emptyTitle": "No contacts yet",
-    "emptyBody": "Add your first contact, or import a spreadsheet once CSV import lands in Phase 3.",
-    "noMatchesTitle": "No matching contacts",
-    "noMatchesBody": "Try a different search term or clear the filters.",
-    "newTitle": "New contact",
-    "newSubtitle": "Only a name or an email address is required.",
-    "editTitle": "Edit contact",
-    "createdMessage": "Contact created.",
-    "deleted": "Contact deleted.",
-    "unnamed": "Unnamed",
-    "name": "Name",
-    "firstName": "First name",
-    "lastName": "Last name",
-    "email": "Email",
-    "phone": "Phone",
-    "jobTitle": "Job title",
-    "company": "Company",
-    "owner": "Owner",
-    "linkedin": "LinkedIn",
-    "notes": "Notes",
-    "details": "Details",
-    "meta": "Record",
-    "source": "Source",
-    "source_manual": "Added manually",
-    "source_csv": "CSV import",
-    "source_api": "API",
-    "created": "Created",
-    "updated": "Last updated",
-    "feedTitle": "Activity",
-    "dealsTitle": "Deals",
-    "dealsComingSoon": "The pipeline arrives in Phase 4.",
-    "tasksTitle": "Tasks",
-    "tasksComingSoon": "Tasks and due dates arrive in Phase 6.",
-    "noCompany": "No company",
-    "searchCompanies": "Search companies…",
-    "noCompaniesFound": "No companies found.",
-    "unassigned": "Unassigned",
-    "searchMembers": "Search members…",
-    "noMembersFound": "No members found.",
-    "selectAll": "Select all rows on this page",
-    "selectRow": "Select {name}",
-    "selectedCount": "{count, plural, one {# selected} other {# selected}}",
-    "assignOwner": "Assign owner",
-    "ownerAssigned": "Owner updated.",
-    "confirmDelete": "Delete this contact? This cannot be undone.",
-    "confirmBulkDelete": "Delete {count, plural, one {# contact} other {# contacts}}? This cannot be undone."
-  },
-  "companies": {
-    "title": "Companies",
-    "action": "Add company",
-    "searchPlaceholder": "Search by name or domain…",
-    "emptyTitle": "No companies yet",
-    "emptyBody": "Companies are a first-class object here. Add one, or let CSV import create them from contact email domains in Phase 3.",
-    "noMatchesTitle": "No matching companies",
-    "noMatchesBody": "Try a different search term or clear the filters.",
-    "newTitle": "New company",
-    "newSubtitle": "Only the name is required.",
-    "editTitle": "Edit company",
-    "createdMessage": "Company created.",
-    "deleted": "Company deleted.",
-    "name": "Name",
-    "domain": "Domain",
-    "domainHint": "Paste a URL or email address — we reduce it to the bare domain.",
-    "industry": "Industry",
-    "website": "Website",
-    "phone": "Phone",
-    "address": "Address",
-    "postalCode": "Postcode",
-    "city": "City",
-    "country": "Country",
-    "location": "Location",
-    "owner": "Owner",
-    "notes": "Notes",
-    "details": "Details",
-    "meta": "Record",
-    "created": "Created",
-    "updated": "Last updated",
-    "contactCount": "Contacts",
-    "peopleTitle": "People",
-    "peopleCount": "{count, plural, =0 {No contacts yet} one {# contact} other {# contacts}}",
-    "noPeople": "No contacts are linked to this company yet.",
-    "dealsTitle": "Deals",
-    "dealsComingSoon": "The pipeline arrives in Phase 4.",
-    "unassigned": "Unassigned",
-    "searchMembers": "Search members…",
-    "noMembersFound": "No members found.",
-    "confirmDelete": "Delete this company? Its contacts are kept and simply unlinked.",
-    "feedRollUp": "Includes activity from this company's people and deals."
-  },
-  "pipeline": {
-    "title": "Pipeline",
-    "action": "Add deal",
-    "searchPlaceholder": "Search deals…",
-    "emptyTitle": "No deals yet",
-    "emptyBody": "Add your first deal to see it on the board. Cards can be dragged between stages, and each column shows its total and weighted value.",
-    "noMatchesTitle": "No matching deals",
-    "noMatchesBody": "Try a different search term.",
-    "setupFailed": "The default pipeline could not be created. Reload the page, and let us know if it keeps happening.",
-    "newTitle": "New deal",
-    "newSubtitle": "Only a title and a stage are required.",
-    "editTitle": "Edit deal",
-    "createdMessage": "Deal created.",
-    "deleted": "Deal deleted.",
-    "confirmDelete": "Delete this deal? This cannot be undone.",
-    "dealTitle": "Title",
-    "dealValue": "Value ({currency})",
-    "valueHint": "Type it however you like — 12500, 12.500 or 12,500.00 all work.",
-    "value": "Value",
-    "weighted": "Weighted",
-    "weightedShort": "{value} weighted · {percent}%",
-    "atProbability": "at {percent}% probability",
-    "total": "Total",
-    "openDeals": "{count, plural, =0 {No open deals} one {# open deal} other {# open deals}}",
-    "stage": "Stage",
-    "contact": "Contact",
-    "company": "Company",
-    "owner": "Owner",
-    "expectedClose": "Expected close",
-    "stageEntered": "Entered stage",
-    "closedAt": "Closed",
-    "noContact": "No contact",
-    "searchContacts": "Search contacts…",
-    "noContactsFound": "No contacts found.",
-    "noCompany": "No company",
-    "searchCompanies": "Search companies…",
-    "noCompaniesFound": "No companies found.",
-    "unassigned": "Unassigned",
-    "searchMembers": "Search members…",
-    "noMembersFound": "No members found.",
-    "status_open": "Open",
-    "status_won": "Won",
-    "status_lost": "Lost",
-    "emptyStage": "Nothing here yet",
-    "moreCards": "{count, plural, one {# more deal} other {# more deals}} in this stage",
-    "daysInStage": "{days, plural, one {# day} other {# days}} here",
-    "daysInStageLong": "{days, plural, =0 {Moved here today} one {# day in this stage} other {# days in this stage}}",
-    "dragHandle": "Drag {title}",
-    "moveTo": "Move {title} to another stage",
-    "moveToStage": "Move to stage",
-    "a11yPickedUp": "Picked up {title}. Use the arrow keys to move it, space to drop.",
-    "a11yOver": "{title} is over {stage}.",
-    "a11yDropped": "Deal dropped.",
-    "a11yCancelled": "Move cancelled.",
-    "lostTitle": "Why was this deal lost?",
-    "lostSubtitle": "Optional, but this is the only moment anyone remembers. It is what makes a loss report worth building later.",
-    "lostReasonLabel": "Reason",
-    "lostReasonPlaceholder": "Price, timing, went with a competitor…",
-    "markLost": "Mark as lost",
-    "manageStages": "Stages",
-    "backToBoard": "Back to the board",
-    "stagesIntro": "Stages belong to your organization — rename them to match how you actually sell. The probability drives the weighted pipeline value, which is the figure that predicts revenue rather than just adding deals up.",
-    "stageName": "Stage name",
-    "probability": "Probability",
-    "wonStage": "Won",
-    "lostStage": "Lost",
-    "stageDealCount": "{count, plural, =0 {no deals} one {# deal} other {# deals}}",
-    "addStage": "Add stage",
-    "stageCreated": "Stage added.",
-    "stageDeleted": "Stage deleted.",
-    "moveUp": "Move {name} earlier",
-    "moveDown": "Move {name} later",
-    "deleteStageTitle": "Delete “{name}”?",
-    "deleteStageBody": "{count, plural, =0 {This stage is empty.} one {# deal is in this stage and will be moved, not deleted.} other {# deals are in this stage and will be moved, not deleted.}}",
-    "moveDealsTo": "Move its deals to"
-  },
-  "activities": {
-    "compose_note": "Note",
-    "compose_email_logged": "Log email",
-    "compose_call_logged": "Log call",
-    "compose_meeting_logged": "Log meeting",
-    "placeholder_note": "What happened?",
-    "placeholder_email_logged": "Subject and gist of the email…",
-    "placeholder_call_logged": "What was said on the call?",
-    "placeholder_meeting_logged": "What came out of the meeting?",
-    "did_note": "added a note",
-    "did_email_logged": "logged an email",
-    "did_call_logged": "logged a call",
-    "did_meeting_logged": "logged a meeting",
-    "post": "Post",
-    "posted": "Added to the feed",
-    "backdate": "Happened earlier",
-    "filter_all": "All",
-    "filter_notes": "Notes",
-    "filter_emails": "Emails",
-    "filter_calls": "Calls",
-    "filter_system": "System",
-    "empty": "Nothing has happened here yet.",
-    "emptyFiltered": "Nothing matches this filter.",
-    "loadMore": "Load more",
-    "loading": "Loading…",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "edited": "(edited)",
-    "edit": "Edit",
-    "editEntry": "Edit entry",
-    "save": "Save",
-    "saved": "Entry updated",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "deleted": "Entry deleted",
-    "confirmDelete": "Delete this entry? This cannot be undone.",
-    "onSubject": "on {label}",
-    "unknownActor": "Someone",
-    "unassigned": "unassigned",
-    "none": "—",
-    "event_stage_changed": "{actor} moved this from {from} to {to}",
-    "event_deal_created": "{actor} created this deal in {stage}",
-    "event_deal_won": "{actor} won this deal",
-    "event_deal_lost": "{actor} marked this deal as lost",
-    "event_contact_created": "{actor} added this contact",
-    "event_company_created": "{actor} added this company",
-    "event_import": "Imported from a CSV file",
-    "event_task_created": "{actor} added the task “{title}”",
-    "event_task_completed": "{actor} completed “{title}”",
-    "event_field_owner": "{actor} changed the owner from {old} to {new}",
-    "event_field_value": "{actor} changed the value from {old} to {new}",
-    "event_field_expected_close_date": "{actor} changed the expected close date from {old} to {new}",
-    "event_field_generic": "{actor} updated {field}",
-    "event_unknown": "{actor} updated this record"
-  },
-  "tasks": {
-    "title": "Tasks",
-    "emptyTitle": "No tasks yet",
-    "emptyBody": "Add a follow-up so nothing falls through the cracks.",
-    "action": "Add task",
-    "newTitle": "New task",
-    "newSubtitle": "A follow-up with a due date, assigned to someone.",
-    "editTitle": "Edit task",
-    "editSubtitle": "Change the title, due date, priority or assignee.",
-    "taskTitle": "Task",
-    "description": "Notes",
-    "dueDate": "Due",
-    "dueDateHint": "Interpreted in {timeZone}, the organization's timezone.",
-    "priority": "Priority",
-    "priority_low": "Low",
-    "priority_normal": "Normal",
-    "priority_high": "High",
-    "assignee": "Assigned to",
-    "unassigned": "Unassigned",
-    "searchMembers": "Search people…",
-    "noMembersFound": "No one found.",
-    "view_overdue": "Overdue",
-    "view_today": "Today",
-    "view_upcoming": "Upcoming",
-    "view_completed": "Completed",
-    "assignee_me": "Mine",
-    "assignee_anyone": "Anyone",
-    "empty_overdue": "Nothing overdue.",
-    "empty_today": "Nothing due today.",
-    "empty_upcoming": "Nothing coming up.",
-    "empty_completed": "Nothing completed in the last 30 days.",
-    "openTasks": "Open tasks",
-    "noOpenTasks": "No open tasks.",
-    "addTask": "Add task",
-    "markComplete": "Mark complete",
-    "markOpen": "Reopen",
-    "completedToast": "Task completed",
-    "reopenedToast": "Task reopened",
-    "createdToast": "Task created",
-    "deletedToast": "Task deleted",
-    "confirmDelete": "Delete this task? This cannot be undone.",
-    "overdueBy": "{days, plural, one {# day overdue} other {# days overdue}}",
-    "dueIn": "{days, plural, one {due in # day} other {due in # days}}",
-    "dueToday": "Due today",
-    "noDueDate": "No due date",
-    "completedOn": "Completed {date}",
-    "autoGeneratedHint": "Created automatically",
-    "untitledLink": "Untitled"
-  },
-  "automation": {
-    "settingsTitle": "Automation",
-    "settingsSubtitle": "Rules that create work for the team automatically.",
-    "leadTaskEnabled": "Follow up on new leads",
-    "leadTaskEnabledHint": "When a deal is created in the first stage of a pipeline, create a follow-up task for its owner.",
-    "leadTaskTitle": "Task title",
-    "leadTaskTitleHint": "Stored as you type it and never re-translated. Use {'{{'}contact_name{'}}'}, {'{{'}company_name{'}}'} or {'{{'}deal_title{'}}'} to fill in details.",
-    "leadTaskOffsetDays": "Due in (business days)",
-    "leadTaskOffsetDaysHint": "Set at 09:00 in the organization's timezone, skipping weekends.",
-    "adminOnly": "Only admins and owners can change automation.",
-    "missing": "This organization has no automation settings, so no tasks are created automatically."
-  },
-  "settings": {
-    "title": "Settings",
-    "tabProfile": "Profile",
-    "tabOrganization": "Organization",
-    "tabMembers": "Members",
-    "profileTitle": "Your profile",
-    "profileSubtitle": "How you appear to teammates, and which language the interface uses for you.",
-    "fullNameLabel": "Full name",
-    "emailLabel": "Email",
-    "emailReadOnly": "Your sign-in address cannot be changed here yet.",
-    "languageTitle": "Interface language",
-    "languageBody": "Applies to the interface only. Records you create keep the wording you gave them.",
-    "saved": "Saved.",
-    "tabAutomation": "Automation",
-    "tabBilling": "Billing"
-  },
-  "billing": {
-    "title": "Billing",
-    "subtitle": "Your plan, seats and invoices. Payments are handled by Polar.",
-    "plan": "Plan",
-    "seats": "Seats",
-    "seatsValue": "{seats} billed · {members} in the team",
-    "contactsUsed": "Contacts",
-    "contactsUnlimited": "{count} of unlimited",
-    "contactsOfLimit": "{count} of {limit}",
-    "trialEnds": "Trial ends",
-    "renews": "Renews",
-    "plan_trial": "Trial",
-    "plan_starter": "Starter",
-    "plan_pro": "Pro",
-    "plan_canceled": "Cancelled",
-    "plan_past_due": "Payment failed",
-    "currentPlan": "Current plan",
-    "choosePlan": "Choose plan",
-    "redirecting": "Redirecting…",
-    "period_monthly": "Monthly",
-    "period_annual": "Annual",
-    "annualSaving": "2 months free",
-    "perSeat_monthly": "per seat / month",
-    "perSeat_annual": "per seat / year",
-    "feature_contacts": "Up to {count, number} contacts",
-    "feature_contactsUnlimited": "Unlimited contacts",
-    "feature_pipelines": "{count, plural, one {# pipeline} other {# pipelines}}",
-    "feature_core": "Contacts, companies, pipeline, tasks and search",
-    "feature_automations": "Automations and follow-up rules",
-    "trialTitle": "{days, plural, =0 {Your trial has ended} one {# day left in your trial} other {# days left in your trial}}",
-    "trialBody": "Every Pro feature is unlocked during the trial. No card needed until you choose a plan.",
-    "lockedTitle": "This workspace is read-only",
-    "lockedBody": "Your data is safe and still visible, but new records cannot be created until you choose a plan.",
-    "pastDueTitle": "The last payment failed",
-    "pastDueBody": "Update your card in the billing portal. The workspace stays editable for seven days, then becomes read-only.",
-    "cancellingTitle": "Subscription ending",
-    "cancellingBody": "You keep full access until {date}.",
-    "managePortal": "Invoices and payment method",
-    "portalHint": "Opens Polar, where invoices, card changes and cancellation live.",
-    "notConfiguredTitle": "Billing is not configured",
-    "notConfiguredBody": "Polar credentials are missing from the environment, so checkout is disabled. Everything else works.",
-    "noSubscriptionRow": "This organization has no billing record yet.",
-    "adminOnly": "Only admins and owners can change the plan."
-  },
-  "errors": {
-    "genericTitle": "Something went wrong",
-    "genericBody": "The error has been logged. Try again, and let us know if it keeps happening.",
-    "notFoundTitle": "Page not found",
-    "notFoundBody": "That page does not exist, or it moved.",
-    "backHome": "Back to start",
-    "digest": "Reference: {digest}",
-    "reference": "Reference: {requestId}",
-    "action": {
-      "unexpected": "Something went wrong. Please try again.",
-      "validation": "Please check the highlighted fields.",
-      "notAuthenticated": "Your session has expired. Please sign in again.",
-      "notAuthorized": "You do not have permission to do that.",
-      "notFound": "That record no longer exists.",
-      "invalidCredentials": "That email and password combination is not correct.",
-      "emailNotConfirmed": "Confirm your email address first — check your inbox for the link.",
-      "emailInUse": "An account already exists for that address.",
-      "weakPassword": "That password is too weak. Try a longer one.",
-      "samePassword": "That is already your current password.",
-      "signupDisabled": "New sign-ups are currently disabled.",
-      "rateLimited": "Too many attempts. Wait a minute and try again.",
-      "lastOwner": "An organization must always have at least one owner.",
-      "invitationInvalid": "That invitation is no longer valid.",
-      "invitationWrongEmail": "This invitation was issued for a different email address.",
-      "alreadyMember": "That person is already a member of this organization.",
-      "contactEmailTaken": "A contact with that email address already exists.",
-      "ownerNotMember": "That person is not a member of this organization.",
-      "duplicate": "That record already exists.",
-      "referenceMissing": "A linked record is missing.",
-      "invalidReference": "That link points at something that no longer exists.",
-      "invalidAmount": "That amount could not be read. Try a number like 1.250,00.",
-      "cannotDeleteTerminalStage": "The won and lost columns cannot be deleted.",
-      "assigneeNotMember": "That person is not a member of this organization.",
-      "subscriptionInactive": "This workspace is read-only until a plan is chosen. Your data is safe.",
-      "contactLimitReached": "You have reached the contact limit for your plan.",
-      "planUpgradeRequired": "That feature needs the Pro plan.",
-      "billingNotConfigured": "Billing is not configured on this deployment.",
-      "billingUnavailable": "The payment provider could not be reached. Try again shortly.",
-      "noSubscription": "There is no subscription to manage yet."
-    },
-    "field": {
-      "required": "This field is required.",
-      "email": "Enter a valid email address.",
-      "passwordTooShort": "Use at least 8 characters.",
-      "passwordTooLong": "That password is too long.",
-      "tooLong": "That is too long.",
-      "currency": "Use a three-letter code such as EUR.",
-      "country": "Use a two-letter country code such as DE.",
-      "contactNeedsIdentity": "Give the contact a name or an email address.",
-      "oneLinkOnly": "A task can be linked to only one record.",
-      "date": "Enter a valid date.",
-      "range": "Enter a number in the allowed range."
-    }
-  }
+  common: {
+    appName: "Mini CRM";
+    appTagline: "Import your contacts, see every deal on one board, and never forget a follow-up.";
+    save: "Save";
+    saved: "Saved.";
+    saving: "Saving…";
+    cancel: "Cancel";
+    delete: "Delete";
+    remove: "Remove";
+    edit: "Edit";
+    create: "Create";
+    copy: "Copy";
+    copied: "Copied";
+    close: "Close";
+    search: "Search";
+    searchPlaceholder: "Search contacts, companies, deals…";
+    loading: "Loading…";
+    retry: "Try again";
+    comingSoon: "Coming soon";
+    phaseBadge: "Phase {phase}";
+    you: "You";
+    undo: "Undo";
+  };
+  nav: {
+    sectionMain: "Workspace";
+    dashboard: "Dashboard";
+    contacts: "Contacts";
+    companies: "Companies";
+    pipeline: "Pipeline";
+    tasks: "Tasks";
+    settings: "Settings";
+    toggleSidebar: "Toggle sidebar";
+  };
+  list: {
+    showing: "Showing {from}–{to} of {total}";
+    rowsPerPage: "Rows per page";
+    pageOf: "Page {page} of {pageCount}";
+    previousPage: "Previous page";
+    nextPage: "Next page";
+  };
+  search: {
+    placeholder: "Search…";
+    shortcut: "⌘K";
+    title: "Search";
+    description: "Find a contact, company or deal.";
+    inputPlaceholder: "Search contacts, companies and deals…";
+    typeToSearch: "Type at least two characters.";
+    searching: "Searching…";
+    noResults: "Nothing found.";
+    recent: "Recent";
+    group_contact: "Contacts";
+    group_company: "Companies";
+    group_deal: "Deals";
+    unnamed: "Unnamed";
+  };
+  filters: {
+    owner: "Owner";
+    mine: "Mine";
+    company: "Company";
+    any: "Any";
+    source: "Source";
+    email: "Email";
+    hasEmail: "Has one";
+    noEmail: "Missing";
+    created: "Created";
+    createdFrom: "Created from";
+    createdTo: "Created until";
+    to: "to";
+    clear: "Clear filters";
+    saveView: "Save view";
+    saveViewHint: "Saves the current filters under a name, just for you.";
+    viewName: "View name";
+    viewNamePlaceholder: "e.g. My open leads";
+    viewSaved: "View saved";
+    viewDeleted: "View deleted";
+    deleteView: "Delete the view {name}";
+  };
+  locale: {
+    label: "Language";
+    change: "Change language";
+  };
+  home: {
+    eyebrow: "Phase 4 · Pipeline";
+    heading: "The CRM shell is standing up";
+    body: "Sign-in, organizations, contacts, companies, CSV import and the pipeline board are live. The activity feed and tasks arrive next.";
+    openApp: "Open the app";
+    signIn: "Sign in";
+    healthCheck: "Health check";
+  };
+  auth: {
+    signInTitle: "Sign in";
+    signInSubtitle: "Welcome back.";
+    signUpTitle: "Create your account";
+    signUpSubtitle: "Two minutes and you have a working CRM.";
+    forgotTitle: "Reset your password";
+    forgotSubtitle: "We will email you a link to choose a new one.";
+    resetTitle: "Choose a new password";
+    resetSubtitle: "Pick something you have not used elsewhere.";
+    emailLabel: "Email";
+    emailPlaceholder: "you@company.com";
+    passwordLabel: "Password";
+    newPasswordLabel: "New password";
+    fullNameLabel: "Full name";
+    fullNamePlaceholder: "Alex Weber";
+    signInAction: "Sign in";
+    signUpAction: "Create account";
+    sendResetAction: "Send reset link";
+    updatePasswordAction: "Update password";
+    sendMagicLinkAction: "Email me a sign-in link";
+    orDivider: "or";
+    noAccount: "No account yet?";
+    haveAccount: "Already have an account?";
+    forgotPassword: "Forgot your password?";
+    backToSignIn: "Back to sign in";
+    signOut: "Sign out";
+    checkYourEmail: "Check your email";
+    confirmationSent: "We sent a confirmation link to {email}. Open it to finish signing up.";
+    magicLinkSent: "If that address has an account, a sign-in link is on its way.";
+    resetLinkSent: "If that address has an account, a reset link is on its way.";
+    passwordUpdated: "Your password has been updated.";
+    passwordHint: "At least 8 characters.";
+  };
+  onboarding: {
+    title: "Create your organization";
+    subtitle: "Everything in the CRM belongs to an organization. You can invite your colleagues once it exists.";
+    nameLabel: "Organization name";
+    namePlaceholder: "Acme GmbH";
+    localeLabel: "Default language";
+    localeHint: "Sets the language of content we create for you, such as pipeline stage names. Each person can still choose their own interface language.";
+    timezoneLabel: "Time zone";
+    currencyLabel: "Currency";
+    createAction: "Create organization";
+    signedInAs: "Signed in as {email}";
+  };
+  organization: {
+    switcherLabel: "Organization";
+    switchAction: "Switch organization";
+    settingsTitle: "Organization";
+    settingsSubtitle: "Name, language and formatting defaults for everyone in this workspace.";
+    nameLabel: "Name";
+    localeLabel: "Default language";
+    timezoneLabel: "Time zone";
+    currencyLabel: "Currency";
+    currencyHint: "Three-letter ISO code, for example EUR or CHF.";
+    saved: "Organization updated.";
+    adminOnly: "Only admins and owners can change these settings.";
+  };
+  members: {
+    title: "Members";
+    subtitle: "People with access to this organization.";
+    inviteAction: "Invite member";
+    inviteTitle: "Invite a member";
+    inviteSubtitle: "We generate a one-time link. Send it to them yourself — by email, chat, however you like.";
+    emailLabel: "Email";
+    roleLabel: "Role";
+    createInviteAction: "Create invite link";
+    linkReady: "Invite link ready";
+    linkExplainer: "Copy this now. It is shown once and cannot be recovered — only a hash is stored. It expires in 7 days and only works for {email}.";
+    pendingTitle: "Pending invitations";
+    pendingEmpty: "No pending invitations.";
+    expired: "Expired";
+    expiresOn: "Expires {date}";
+    revokeAction: "Revoke";
+    joinedOn: "Joined {date}";
+    unnamed: "Unnamed";
+    removeAction: "Remove from organization";
+    leaveAction: "Leave organization";
+    changeRoleAction: "Change role";
+    roleOwner: "Owner";
+    roleAdmin: "Admin";
+    roleMember: "Member";
+    roleOwnerHint: "Full control, including billing and deleting the organization.";
+    roleAdminHint: "Manage members and all data. No billing access.";
+    roleMemberHint: "Work with all data. Cannot manage members.";
+    memberOnlyView: "Only admins and owners can manage members.";
+  };
+  invite: {
+    title: "Join {organization}";
+    subtitle: "You have been invited to collaborate.";
+    acceptAction: "Accept invitation";
+    signInFirstTitle: "Sign in to accept";
+    signInFirstBody: "This invitation is tied to a specific email address. Sign in or create an account with that address, then open the link again.";
+    invalidTitle: "This invitation is not valid";
+    invalidBody: "It may have expired, been revoked, or already been used. Ask whoever invited you for a fresh link.";
+    wrongEmailTitle: "Wrong account";
+    wrongEmailBody: "This invitation was issued for a different email address. Sign out and sign in with the invited address.";
+    accepted: "You have joined the organization.";
+  };
+  dashboard: {
+    title: "Dashboard";
+    subtitle: "A read-only preview. Real figures arrive with the pipeline in Phase 4.";
+    openDeals: "Open deals";
+    pipelineValue: "Pipeline value";
+    weightedValue: "Weighted value";
+    overdueTasks: "Overdue tasks";
+    sampleNotice: "Sample data — these values are hardcoded to verify locale-aware formatting.";
+    lastUpdated: "Last updated {date}";
+    overdueCount: "{count, plural, =0 {Nothing overdue} one {# task overdue} other {# tasks overdue}}";
+  };
+  import: {
+    title: "Import contacts";
+    backToContacts: "Back to contacts";
+    uploadTitle: "Choose a file";
+    uploadSubtitle: "A CSV export from your old CRM, Excel, or Google Sheets.";
+    dropHere: "Drop your CSV here";
+    uploadHint: "Up to 10 MB and 20,000 rows. Comma, semicolon or tab separated — we work it out.";
+    chooseFile: "Choose file";
+    templatePrompt: "Not sure how to lay out your file?";
+    templateDownload: "Download an example CSV";
+    templateHint: "Only a name or an email address is required — every other column is optional, and you can leave out columns you do not have.";
+    mapTitle: "Match your columns";
+    mapSubtitle: "{rows} rows · detected {encoding}, separated by {delimiter}";
+    tab: "tab";
+    columnHeader: "Column in your file";
+    firstValues: "First values";
+    mapsTo: "Import as";
+    ignoreColumn: "Do not import";
+    raggedRows: "{count, plural, one {# row has} other {# rows have}} the wrong number of columns and may be misread — check rows {rows}. This usually means a quote is not closed.";
+    continue: "Continue";
+    back: "Back";
+    previewTitle: "Check before importing";
+    previewSubtitle: "Nothing has been written yet. The first 20 rows are shown below.";
+    statValid: "Will import";
+    statExisting: "Already in your CRM";
+    statInFile: "Duplicates in file";
+    statErrors: "Cannot import";
+    statCreated: "Created";
+    statUpdated: "Updated";
+    statSkipped: "Skipped";
+    status: "Status";
+    willImport: "Will import";
+    policyLabel: "When a contact already exists";
+    policy_skip: "Keep what I have";
+    policy_update: "Update with the file";
+    policy_create: "Import anyway";
+    policyHint_skip: "The existing contact is left exactly as it is.";
+    policyHint_update: "Filled-in cells overwrite existing values. Blank cells never erase anything.";
+    policyHint_create: "Email addresses must be unique, so matching contacts are skipped rather than duplicated.";
+    createCompaniesLabel: "Create companies that do not exist yet";
+    noTasksNote: "No follow-up tasks are created by an import. You can add them once tasks arrive in Phase 6.";
+    startImport: "Import {count, plural, one {# contact} other {# contacts}}";
+    runningTitle: "Importing";
+    runningSubtitle: "Keep this tab open until it finishes.";
+    progress: "{percent}% complete";
+    doneTitle: "Import finished";
+    doneSubtitle: "You can undo this run from the history below.";
+    doneToast: "Contacts imported.";
+    downloadErrors: "Download error report";
+    importAnother: "Import another file";
+    viewContacts: "View contacts";
+    errorCsvRow: "Row";
+    errorCsvProblem: "Problem";
+    errorCsvDetail: "Detail";
+    historyTitle: "Recent imports";
+    historyEmpty: "No imports yet.";
+    historyCounts: "{created} created · {updated} updated · {skipped} skipped · {errors} failed";
+    undo: "Undo";
+    confirmUndo: "Delete the {count, plural, one {# contact} other {# contacts}} this import created? Contacts it merely updated keep their new values — those cannot be restored.";
+    undoneToast: "Removed {contacts} contacts and {companies} companies.";
+    status_pending: "Pending";
+    status_running: "Running";
+    status_completed: "Completed";
+    status_failed: "Failed";
+    status_cancelled: "Cancelled";
+    status_rolled_back: "Undone";
+    field_first_name: "First name";
+    field_last_name: "Last name";
+    field_full_name: "Full name";
+    field_email: "Email";
+    field_phone: "Phone";
+    field_job_title: "Job title";
+    field_company_name: "Company";
+    field_company_domain: "Company domain";
+    field_linkedin_url: "LinkedIn";
+    field_notes: "Notes";
+    invalidEmail: "Invalid email";
+    missingIdentity: "No name or email";
+    duplicateInFile: "Duplicate in file";
+    duplicateEmail: "Already exists";
+    invalidValue: "Invalid value";
+    valueTooLong: "Value too long";
+    ownerNotMember: "Owner is not a member";
+    unknown: "Could not import";
+  };
+  contacts: {
+    title: "Contacts";
+    action: "Add contact";
+    importAction: "Import";
+    searchPlaceholder: "Search by name or email…";
+    emptyTitle: "No contacts yet";
+    emptyBody: "Add your first contact, or import a spreadsheet once CSV import lands in Phase 3.";
+    noMatchesTitle: "No matching contacts";
+    noMatchesBody: "Try a different search term or clear the filters.";
+    newTitle: "New contact";
+    newSubtitle: "Only a name or an email address is required.";
+    editTitle: "Edit contact";
+    createdMessage: "Contact created.";
+    deleted: "Contact deleted.";
+    unnamed: "Unnamed";
+    name: "Name";
+    firstName: "First name";
+    lastName: "Last name";
+    email: "Email";
+    phone: "Phone";
+    jobTitle: "Job title";
+    company: "Company";
+    owner: "Owner";
+    linkedin: "LinkedIn";
+    notes: "Notes";
+    details: "Details";
+    meta: "Record";
+    source: "Source";
+    source_manual: "Added manually";
+    source_csv: "CSV import";
+    source_api: "API";
+    created: "Created";
+    updated: "Last updated";
+    feedTitle: "Activity";
+    dealsTitle: "Deals";
+    dealsComingSoon: "The pipeline arrives in Phase 4.";
+    tasksTitle: "Tasks";
+    tasksComingSoon: "Tasks and due dates arrive in Phase 6.";
+    noCompany: "No company";
+    searchCompanies: "Search companies…";
+    noCompaniesFound: "No companies found.";
+    unassigned: "Unassigned";
+    searchMembers: "Search members…";
+    noMembersFound: "No members found.";
+    selectAll: "Select all rows on this page";
+    selectRow: "Select {name}";
+    selectedCount: "{count, plural, one {# selected} other {# selected}}";
+    assignOwner: "Assign owner";
+    ownerAssigned: "Owner updated.";
+    confirmDelete: "Delete this contact? This cannot be undone.";
+    confirmBulkDelete: "Delete {count, plural, one {# contact} other {# contacts}}? This cannot be undone.";
+  };
+  companies: {
+    title: "Companies";
+    action: "Add company";
+    searchPlaceholder: "Search by name or domain…";
+    emptyTitle: "No companies yet";
+    emptyBody: "Companies are a first-class object here. Add one, or let CSV import create them from contact email domains in Phase 3.";
+    noMatchesTitle: "No matching companies";
+    noMatchesBody: "Try a different search term or clear the filters.";
+    newTitle: "New company";
+    newSubtitle: "Only the name is required.";
+    editTitle: "Edit company";
+    createdMessage: "Company created.";
+    deleted: "Company deleted.";
+    name: "Name";
+    domain: "Domain";
+    domainHint: "Paste a URL or email address — we reduce it to the bare domain.";
+    industry: "Industry";
+    website: "Website";
+    phone: "Phone";
+    address: "Address";
+    postalCode: "Postcode";
+    city: "City";
+    country: "Country";
+    location: "Location";
+    owner: "Owner";
+    notes: "Notes";
+    details: "Details";
+    meta: "Record";
+    created: "Created";
+    updated: "Last updated";
+    contactCount: "Contacts";
+    peopleTitle: "People";
+    peopleCount: "{count, plural, =0 {No contacts yet} one {# contact} other {# contacts}}";
+    noPeople: "No contacts are linked to this company yet.";
+    dealsTitle: "Deals";
+    dealsComingSoon: "The pipeline arrives in Phase 4.";
+    unassigned: "Unassigned";
+    searchMembers: "Search members…";
+    noMembersFound: "No members found.";
+    confirmDelete: "Delete this company? Its contacts are kept and simply unlinked.";
+    feedRollUp: "Includes activity from this company's people and deals.";
+  };
+  pipeline: {
+    title: "Pipeline";
+    action: "Add deal";
+    searchPlaceholder: "Search deals…";
+    emptyTitle: "No deals yet";
+    emptyBody: "Add your first deal to see it on the board. Cards can be dragged between stages, and each column shows its total and weighted value.";
+    noMatchesTitle: "No matching deals";
+    noMatchesBody: "Try a different search term.";
+    setupFailed: "The default pipeline could not be created. Reload the page, and let us know if it keeps happening.";
+    newTitle: "New deal";
+    newSubtitle: "Only a title and a stage are required.";
+    editTitle: "Edit deal";
+    createdMessage: "Deal created.";
+    deleted: "Deal deleted.";
+    confirmDelete: "Delete this deal? This cannot be undone.";
+    dealTitle: "Title";
+    dealValue: "Value ({currency})";
+    valueHint: "Type it however you like — 12500, 12.500 or 12,500.00 all work.";
+    value: "Value";
+    weighted: "Weighted";
+    weightedShort: "{value} weighted · {percent}%";
+    atProbability: "at {percent}% probability";
+    total: "Total";
+    openDeals: "{count, plural, =0 {No open deals} one {# open deal} other {# open deals}}";
+    stage: "Stage";
+    contact: "Contact";
+    company: "Company";
+    owner: "Owner";
+    expectedClose: "Expected close";
+    stageEntered: "Entered stage";
+    closedAt: "Closed";
+    noContact: "No contact";
+    searchContacts: "Search contacts…";
+    noContactsFound: "No contacts found.";
+    noCompany: "No company";
+    searchCompanies: "Search companies…";
+    noCompaniesFound: "No companies found.";
+    unassigned: "Unassigned";
+    searchMembers: "Search members…";
+    noMembersFound: "No members found.";
+    status_open: "Open";
+    status_won: "Won";
+    status_lost: "Lost";
+    emptyStage: "Nothing here yet";
+    moreCards: "{count, plural, one {# more deal} other {# more deals}} in this stage";
+    daysInStage: "{days, plural, one {# day} other {# days}} here";
+    daysInStageLong: "{days, plural, =0 {Moved here today} one {# day in this stage} other {# days in this stage}}";
+    dragHandle: "Drag {title}";
+    moveTo: "Move {title} to another stage";
+    moveToStage: "Move to stage";
+    a11yPickedUp: "Picked up {title}. Use the arrow keys to move it, space to drop.";
+    a11yOver: "{title} is over {stage}.";
+    a11yDropped: "Deal dropped.";
+    a11yCancelled: "Move cancelled.";
+    lostTitle: "Why was this deal lost?";
+    lostSubtitle: "Optional, but this is the only moment anyone remembers. It is what makes a loss report worth building later.";
+    lostReasonLabel: "Reason";
+    lostReasonPlaceholder: "Price, timing, went with a competitor…";
+    markLost: "Mark as lost";
+    manageStages: "Stages";
+    backToBoard: "Back to the board";
+    stagesIntro: "Stages belong to your organization — rename them to match how you actually sell. The probability drives the weighted pipeline value, which is the figure that predicts revenue rather than just adding deals up.";
+    stageName: "Stage name";
+    probability: "Probability";
+    wonStage: "Won";
+    lostStage: "Lost";
+    stageDealCount: "{count, plural, =0 {no deals} one {# deal} other {# deals}}";
+    addStage: "Add stage";
+    stageCreated: "Stage added.";
+    stageDeleted: "Stage deleted.";
+    moveUp: "Move {name} earlier";
+    moveDown: "Move {name} later";
+    deleteStageTitle: "Delete “{name}”?";
+    deleteStageBody: "{count, plural, =0 {This stage is empty.} one {# deal is in this stage and will be moved, not deleted.} other {# deals are in this stage and will be moved, not deleted.}}";
+    moveDealsTo: "Move its deals to";
+  };
+  activities: {
+    compose_note: "Note";
+    compose_email_logged: "Log email";
+    compose_call_logged: "Log call";
+    compose_meeting_logged: "Log meeting";
+    placeholder_note: "What happened?";
+    placeholder_email_logged: "Subject and gist of the email…";
+    placeholder_call_logged: "What was said on the call?";
+    placeholder_meeting_logged: "What came out of the meeting?";
+    did_note: "added a note";
+    did_email_logged: "logged an email";
+    did_call_logged: "logged a call";
+    did_meeting_logged: "logged a meeting";
+    post: "Post";
+    posted: "Added to the feed";
+    backdate: "Happened earlier";
+    filter_all: "All";
+    filter_notes: "Notes";
+    filter_emails: "Emails";
+    filter_calls: "Calls";
+    filter_system: "System";
+    empty: "Nothing has happened here yet.";
+    emptyFiltered: "Nothing matches this filter.";
+    loadMore: "Load more";
+    loading: "Loading…";
+    today: "Today";
+    yesterday: "Yesterday";
+    edited: "(edited)";
+    edit: "Edit";
+    editEntry: "Edit entry";
+    save: "Save";
+    saved: "Entry updated";
+    cancel: "Cancel";
+    delete: "Delete";
+    deleted: "Entry deleted";
+    confirmDelete: "Delete this entry? This cannot be undone.";
+    onSubject: "on {label}";
+    unknownActor: "Someone";
+    unassigned: "unassigned";
+    none: "—";
+    event_stage_changed: "{actor} moved this from {from} to {to}";
+    event_deal_created: "{actor} created this deal in {stage}";
+    event_deal_won: "{actor} won this deal";
+    event_deal_lost: "{actor} marked this deal as lost";
+    event_contact_created: "{actor} added this contact";
+    event_company_created: "{actor} added this company";
+    event_import: "Imported from a CSV file";
+    event_task_created: "{actor} added the task “{title}”";
+    event_task_completed: "{actor} completed “{title}”";
+    event_field_owner: "{actor} changed the owner from {old} to {new}";
+    event_field_value: "{actor} changed the value from {old} to {new}";
+    event_field_expected_close_date: "{actor} changed the expected close date from {old} to {new}";
+    event_field_generic: "{actor} updated {field}";
+    event_unknown: "{actor} updated this record";
+  };
+  tasks: {
+    title: "Tasks";
+    emptyTitle: "No tasks yet";
+    emptyBody: "Add a follow-up so nothing falls through the cracks.";
+    action: "Add task";
+    newTitle: "New task";
+    newSubtitle: "A follow-up with a due date, assigned to someone.";
+    editTitle: "Edit task";
+    editSubtitle: "Change the title, due date, priority or assignee.";
+    taskTitle: "Task";
+    description: "Notes";
+    dueDate: "Due";
+    dueDateHint: "Interpreted in {timeZone}, the organization's timezone.";
+    priority: "Priority";
+    priority_low: "Low";
+    priority_normal: "Normal";
+    priority_high: "High";
+    assignee: "Assigned to";
+    unassigned: "Unassigned";
+    searchMembers: "Search people…";
+    noMembersFound: "No one found.";
+    view_overdue: "Overdue";
+    view_today: "Today";
+    view_upcoming: "Upcoming";
+    view_completed: "Completed";
+    assignee_me: "Mine";
+    assignee_anyone: "Anyone";
+    empty_overdue: "Nothing overdue.";
+    empty_today: "Nothing due today.";
+    empty_upcoming: "Nothing coming up.";
+    empty_completed: "Nothing completed in the last 30 days.";
+    openTasks: "Open tasks";
+    noOpenTasks: "No open tasks.";
+    addTask: "Add task";
+    markComplete: "Mark complete";
+    markOpen: "Reopen";
+    completedToast: "Task completed";
+    reopenedToast: "Task reopened";
+    createdToast: "Task created";
+    deletedToast: "Task deleted";
+    confirmDelete: "Delete this task? This cannot be undone.";
+    overdueBy: "{days, plural, one {# day overdue} other {# days overdue}}";
+    dueIn: "{days, plural, one {due in # day} other {due in # days}}";
+    dueToday: "Due today";
+    noDueDate: "No due date";
+    completedOn: "Completed {date}";
+    autoGeneratedHint: "Created automatically";
+    untitledLink: "Untitled";
+  };
+  automation: {
+    settingsTitle: "Automation";
+    settingsSubtitle: "Rules that create work for the team automatically.";
+    leadTaskEnabled: "Follow up on new leads";
+    leadTaskEnabledHint: "When a deal is created in the first stage of a pipeline, create a follow-up task for its owner.";
+    leadTaskTitle: "Task title";
+    leadTaskTitleHint: "Stored as you type it and never re-translated. Use {'{{'}contact_name{'}}'}, {'{{'}company_name{'}}'} or {'{{'}deal_title{'}}'} to fill in details.";
+    leadTaskOffsetDays: "Due in (business days)";
+    leadTaskOffsetDaysHint: "Set at 09:00 in the organization's timezone, skipping weekends.";
+    adminOnly: "Only admins and owners can change automation.";
+    missing: "This organization has no automation settings, so no tasks are created automatically.";
+  };
+  settings: {
+    title: "Settings";
+    tabProfile: "Profile";
+    tabOrganization: "Organization";
+    tabMembers: "Members";
+    profileTitle: "Your profile";
+    profileSubtitle: "How you appear to teammates, and which language the interface uses for you.";
+    fullNameLabel: "Full name";
+    emailLabel: "Email";
+    emailReadOnly: "Your sign-in address cannot be changed here yet.";
+    languageTitle: "Interface language";
+    languageBody: "Applies to the interface only. Records you create keep the wording you gave them.";
+    saved: "Saved.";
+    tabAutomation: "Automation";
+    tabBilling: "Billing";
+  };
+  billing: {
+    title: "Billing";
+    subtitle: "Your plan, seats and invoices. Payments are handled by Polar.";
+    plan: "Plan";
+    seats: "Seats";
+    seatsValue: "{seats} billed · {members} in the team";
+    contactsUsed: "Contacts";
+    contactsUnlimited: "{count} of unlimited";
+    contactsOfLimit: "{count} of {limit}";
+    trialEnds: "Trial ends";
+    renews: "Renews";
+    plan_trial: "Trial";
+    plan_starter: "Starter";
+    plan_pro: "Pro";
+    plan_canceled: "Cancelled";
+    plan_past_due: "Payment failed";
+    currentPlan: "Current plan";
+    choosePlan: "Choose plan";
+    redirecting: "Redirecting…";
+    period_monthly: "Monthly";
+    period_annual: "Annual";
+    annualSaving: "2 months free";
+    perSeat_monthly: "per seat / month";
+    perSeat_annual: "per seat / year";
+    feature_contacts: "Up to {count, number} contacts";
+    feature_contactsUnlimited: "Unlimited contacts";
+    feature_pipelines: "{count, plural, one {# pipeline} other {# pipelines}}";
+    feature_core: "Contacts, companies, pipeline, tasks and search";
+    feature_automations: "Automations and follow-up rules";
+    trialTitle: "{days, plural, =0 {Your trial has ended} one {# day left in your trial} other {# days left in your trial}}";
+    trialBody: "Every Pro feature is unlocked during the trial. No card needed until you choose a plan.";
+    lockedTitle: "This workspace is read-only";
+    lockedBody: "Your data is safe and still visible, but new records cannot be created until you choose a plan.";
+    pastDueTitle: "The last payment failed";
+    pastDueBody: "Update your card in the billing portal. The workspace stays editable for seven days, then becomes read-only.";
+    cancellingTitle: "Subscription ending";
+    cancellingBody: "You keep full access until {date}.";
+    managePortal: "Invoices and payment method";
+    portalHint: "Opens Polar, where invoices, card changes and cancellation live.";
+    notConfiguredTitle: "Billing is not configured";
+    notConfiguredBody: "Polar credentials are missing from the environment, so checkout is disabled. Everything else works.";
+    noSubscriptionRow: "This organization has no billing record yet.";
+    adminOnly: "Only admins and owners can change the plan.";
+  };
+  errors: {
+    genericTitle: "Something went wrong";
+    genericBody: "The error has been logged. Try again, and let us know if it keeps happening.";
+    notFoundTitle: "Page not found";
+    notFoundBody: "That page does not exist, or it moved.";
+    backHome: "Back to start";
+    digest: "Reference: {digest}";
+    reference: "Reference: {requestId}";
+    action: {
+      unexpected: "Something went wrong. Please try again.";
+      validation: "Please check the highlighted fields.";
+      notAuthenticated: "Your session has expired. Please sign in again.";
+      notAuthorized: "You do not have permission to do that.";
+      notFound: "That record no longer exists.";
+      invalidCredentials: "That email and password combination is not correct.";
+      emailNotConfirmed: "Confirm your email address first — check your inbox for the link.";
+      emailInUse: "An account already exists for that address.";
+      weakPassword: "That password is too weak. Try a longer one.";
+      samePassword: "That is already your current password.";
+      signupDisabled: "New sign-ups are currently disabled.";
+      rateLimited: "Too many attempts. Wait a minute and try again.";
+      lastOwner: "An organization must always have at least one owner.";
+      invitationInvalid: "That invitation is no longer valid.";
+      invitationWrongEmail: "This invitation was issued for a different email address.";
+      alreadyMember: "That person is already a member of this organization.";
+      contactEmailTaken: "A contact with that email address already exists.";
+      ownerNotMember: "That person is not a member of this organization.";
+      duplicate: "That record already exists.";
+      referenceMissing: "A linked record is missing.";
+      invalidReference: "That link points at something that no longer exists.";
+      invalidAmount: "That amount could not be read. Try a number like 1.250,00.";
+      cannotDeleteTerminalStage: "The won and lost columns cannot be deleted.";
+      assigneeNotMember: "That person is not a member of this organization.";
+      subscriptionInactive: "This workspace is read-only until a plan is chosen. Your data is safe.";
+      contactLimitReached: "You have reached the contact limit for your plan.";
+      planUpgradeRequired: "That feature needs the Pro plan.";
+      billingNotConfigured: "Billing is not configured on this deployment.";
+      billingUnavailable: "The payment provider could not be reached. Try again shortly.";
+      noSubscription: "There is no subscription to manage yet.";
+    };
+    field: {
+      required: "This field is required.";
+      email: "Enter a valid email address.";
+      passwordTooShort: "Use at least 8 characters.";
+      passwordTooLong: "That password is too long.";
+      tooLong: "That is too long.";
+      currency: "Use a three-letter code such as EUR.";
+      country: "Use a two-letter country code such as DE.";
+      contactNeedsIdentity: "Give the contact a name or an email address.";
+      oneLinkOnly: "A task can be linked to only one record.";
+      date: "Enter a valid date.";
+      range: "Enter a number in the allowed range.";
+    };
+  };
 };
 export default messages;
