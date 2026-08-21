@@ -11,9 +11,13 @@ const withNextIntl = createNextIntlPlugin({
 });
 
 /**
- * Baseline security headers. A Content-Security-Policy is deliberately absent
- * here — it needs per-request nonces and belongs with the hardening work in
- * Phase 9, where it can be verified properly rather than shipped half-configured.
+ * Baseline security headers.
+ *
+ * The Content-Security-Policy is **not** here. It carries a per-request script
+ * nonce, and static config cannot generate one — it is built in `src/proxy.ts`
+ * instead. A second CSP here would not be defence in depth either: browsers
+ * enforce every policy they are sent, so a nonce-less copy would block the very
+ * scripts the nonced one allows. One policy, one place.
  */
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },

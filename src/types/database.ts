@@ -622,6 +622,9 @@ export type Database = {
         Row: {
           created_at: string;
           currency: string;
+          deletion_requested_at: string | null;
+          deletion_requested_by: string | null;
+          deletion_scheduled_for: string | null;
           id: string;
           locale: string;
           name: string;
@@ -632,6 +635,9 @@ export type Database = {
         Insert: {
           created_at?: string;
           currency?: string;
+          deletion_requested_at?: string | null;
+          deletion_requested_by?: string | null;
+          deletion_scheduled_for?: string | null;
           id?: string;
           locale?: string;
           name: string;
@@ -642,12 +648,44 @@ export type Database = {
         Update: {
           created_at?: string;
           currency?: string;
+          deletion_requested_at?: string | null;
+          deletion_requested_by?: string | null;
+          deletion_scheduled_for?: string | null;
           id?: string;
           locale?: string;
           name?: string;
           slug?: string;
           timezone?: string;
           updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "organizations_deletion_requested_by_fkey";
+            columns: ["deletion_requested_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rate_limits: {
+        Row: {
+          bucket: string;
+          hits: number;
+          updated_at: string;
+          window_started_at: string;
+        };
+        Insert: {
+          bucket: string;
+          hits?: number;
+          updated_at?: string;
+          window_started_at?: string;
+        };
+        Update: {
+          bucket?: string;
+          hits?: number;
+          updated_at?: string;
+          window_started_at?: string;
         };
         Relationships: [];
       };
@@ -981,6 +1019,35 @@ export type Database = {
     };
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string };
+      cancel_organization_deletion: {
+        Args: { p_organization_id: string };
+        Returns: undefined;
+      };
+      consume_rate_limit: {
+        Args: { p_bucket: string; p_limit: number; p_window_seconds: number };
+        Returns: Json;
+      };
+      dashboard_summary: {
+        Args: {
+          p_month_start: string;
+          p_now: string;
+          p_organization_id: string;
+          p_today_end: string;
+          p_user_id?: string;
+        };
+        Returns: Json;
+      };
+      deletion_grace_days: { Args: never; Returns: number };
+      export_organization: {
+        Args: { p_limit?: number; p_organization_id: string };
+        Returns: Json;
+      };
+      prune_rate_limits: { Args: { p_older_than?: string }; Returns: number };
+      purge_due_organizations: { Args: never; Returns: number };
+      request_organization_deletion: {
+        Args: { p_confirm_name: string; p_organization_id: string };
+        Returns: string;
+      };
       activity_feed: {
         Args: {
           p_before_id?: number;

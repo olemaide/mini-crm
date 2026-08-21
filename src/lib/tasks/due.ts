@@ -75,6 +75,20 @@ export function dayRange(now: Date, timeZone: string, offsetDays = 0): { from: D
   };
 }
 
+/**
+ * First instant of the current month, in the organization's timezone.
+ *
+ * Lives beside `dayRange` rather than in the dashboard feature because this file
+ * is where timezone arithmetic is allowed to happen — the dashboard's "won this
+ * month" and the task queries' "today" have to agree on whose calendar is being
+ * used, and two implementations of that rule would eventually disagree by an
+ * hour twice a year.
+ */
+export function monthStart(now: Date, timeZone: string): Date {
+  const zoned = toZonedTime(now, timeZone);
+  return fromZonedTime(new Date(zoned.getFullYear(), zoned.getMonth(), 1, 0, 0, 0, 0), timeZone);
+}
+
 /** Sort order for a task list: overdue first, then soonest, undated last. */
 export const BUCKET_ORDER: Record<DueBucket, number> = {
   overdue: 0,

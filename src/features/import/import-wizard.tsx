@@ -185,13 +185,32 @@ export function ImportWizard() {
     const totals: RunResult = { created: 0, updated: 0, skipped: 0, errors: 0, errorRows: [] };
 
     for (const [index, chunk] of chunks.entries()) {
-      let response: Response;
-      try {
-        response = await fetch("/api/import/chunk", {
+      const send = () =>
+        fetch("/api/import/chunk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jobId: job.data.jobId, rows: chunk }),
         });
+
+      let response: Response;
+      try {
+        response = await send();
+
+        /*
+         * A 429 from the Phase 9 limiter is the one recoverable failure here.
+         * Everything else means the chunk can never succeed, but a rate limit
+         * clears on its own — and aborting a 5,000-row import because chunk 7
+         * arrived a second early would be a worse bug than the flood the
+         * limiter exists to stop. One wait, honouring the server's own
+         * Retry-After, then a single retry.
+         */
+        if (response.status === 429) {
+          const retryAfter = Number(response.headers.get("Retry-After") ?? "5");
+          const waitMs =
+            Math.min(Math.max(Number.isFinite(retryAfter) ? retryAfter : 5, 1), 60) * 1000;
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+          response = await send();
+        }
       } catch {
         // Network failure mid-import. The rows already written stay written —
         // the job is marked failed and the user can undo it wholesale.

@@ -51,6 +51,36 @@ export async function getOrganizationMembers(organizationId: string): Promise<Me
   }));
 }
 
+export type PendingDeletion = {
+  requestedAt: string;
+  scheduledFor: string;
+};
+
+/**
+ * A scheduled erasure, if there is one.
+ *
+ * Read on every authenticated page so the banner cannot be missed — the one
+ * notice where "they probably saw it in Settings" is not good enough. It is a
+ * single-row primary-key lookup on a table the session already touched, so the
+ * cost is a cache hit rather than a query.
+ */
+export async function getPendingDeletion(organizationId: string): Promise<PendingDeletion | null> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
+    .from("organizations")
+    .select("deletion_requested_at, deletion_scheduled_for")
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (error || !data?.deletion_scheduled_for) return null;
+
+  return {
+    requestedAt: data.deletion_requested_at ?? data.deletion_scheduled_for,
+    scheduledFor: data.deletion_scheduled_for,
+  };
+}
+
 /** Pending invitations. Admin-only by RLS; members get an empty list. */
 export async function getPendingInvitations(organizationId: string): Promise<InvitationRow[]> {
   const supabase = await createSupabaseServerClient();

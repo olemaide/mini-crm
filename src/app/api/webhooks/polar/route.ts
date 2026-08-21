@@ -3,6 +3,7 @@ import { validateEvent, WebhookVerificationError } from "@polar-sh/sdk/webhooks"
 import { env } from "@/env";
 import { createRequestLogger } from "@/lib/logger";
 import { planForProductId } from "@/lib/polar/plans";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database";
 
@@ -77,6 +78,24 @@ export async function POST(request: Request) {
   if (!env.POLAR_WEBHOOK_SECRET) {
     log.error({}, "polar webhook received but no secret is configured");
     return Response.json({ error: "not configured" }, { status: 500 });
+  }
+
+  /*
+   * Ahead of signature verification, deliberately.
+   *
+   * Verification is HMAC over the whole body plus a database write; letting
+   * anyone on the internet trigger that at will is the flood worth stopping,
+   * and by definition an attacker's requests are the ones that fail the
+   * signature check. The cost is that a flood can push genuine deliveries into
+   * 429 — which is why 429 is the answer rather than 403: Polar treats any
+   * non-2xx as retryable and redelivers, so a real event is delayed, not lost.
+   */
+  const limit = await consumeRateLimit("webhook.polar", "endpoint");
+  if (!limit.allowed) {
+    return Response.json(
+      { error: "rate limited" },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
   }
 
   /*

@@ -4,6 +4,7 @@ import { importChunkSchema } from "@/features/import/schema";
 import { getSession } from "@/lib/auth/session";
 import { createRequestLogger } from "@/lib/logger";
 import { normalizePhone } from "@/lib/normalize";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
@@ -34,6 +35,22 @@ export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "notAuthenticated", requestId }, { status: 401 });
+  }
+
+  /*
+   * Per organization, not per user: the cost being protected is database work
+   * for one tenant, and two colleagues importing at once should share the
+   * budget rather than each getting a full one.
+   *
+   * 429 with Retry-After, because the client is a loop rather than a person —
+   * import-wizard.tsx can honour the header and back off instead of hammering.
+   */
+  const limit = await consumeRateLimit("import.chunk", session.organization.id);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "rateLimited", requestId },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
   }
 
   let body: unknown;

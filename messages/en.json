@@ -81,9 +81,9 @@
     "change": "Change language"
   },
   "home": {
-    "eyebrow": "Phase 4 · Pipeline",
-    "heading": "The CRM shell is standing up",
-    "body": "Sign-in, organizations, contacts, companies, CSV import and the pipeline board are live. The activity feed and tasks arrive next.",
+    "eyebrow": "A small CRM for small German teams",
+    "heading": "Import your contacts. See every deal. Never miss a follow-up.",
+    "body": "Contacts and companies, a Kanban pipeline with weighted forecasting, CSV import with duplicate detection, an activity feed and automatic follow-up tasks. Hosted in Frankfurt, no third-party trackers.",
     "openApp": "Open the app",
     "signIn": "Sign in",
     "healthCheck": "Health check"
@@ -189,14 +189,45 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "A read-only preview. Real figures arrive with the pipeline in Phase 4.",
+    "subtitle": "Where {organization} stands right now, straight from your own data.",
     "openDeals": "Open deals",
     "pipelineValue": "Pipeline value",
     "weightedValue": "Weighted value",
     "overdueTasks": "Overdue tasks",
-    "sampleNotice": "Sample data — these values are hardcoded to verify locale-aware formatting.",
+    "acrossStages": "{count, plural, =0 {No stage in play} one {Across # stage} other {Across # stages}}",
+    "openOnly": "Open deals only",
+    "weightedHint": "Weighted by each stage's probability",
+    "mineOverdue": "{count, plural, =0 {None assigned to you} one {# assigned to you} other {# assigned to you}}",
+    "dueToday": "{count, plural, =0 {Nothing due today} one {# due today} other {# due today}}",
+    "thisMonth": "This month",
+    "wonThisMonth": "Won value",
+    "wonCount": "Deals won",
+    "contacts": "Contacts",
+    "companies": "Companies",
+    "byStage": "Pipeline by stage",
+    "openBoard": "Open the board",
+    "noStages": "No pipeline is set up for this organization yet.",
+    "stageSummary": "{count} · {value}",
+    "emptyTitle": "Your workspace is still empty",
+    "emptyBody": "Fill it with sample data to see the pipeline, tasks and activity feed in action — or import your own contacts straight away.",
+    "emptyImport": "Import contacts",
+    "seedAction": "Fill with sample data",
+    "seeding": "Filling…",
+    "seedDone": "Created {contacts} contacts and {deals} deals.",
+    "unavailableTitle": "Figures unavailable",
+    "unavailableBody": "The numbers could not be loaded. Reload the page — your data is not affected.",
     "lastUpdated": "Last updated {date}",
-    "overdueCount": "{count, plural, =0 {Nothing overdue} one {# task overdue} other {# tasks overdue}}"
+    "onboarding": {
+      "title": "Get started",
+      "progress": "{done}/{total}",
+      "hasContacts": "Add your first contact",
+      "hasImported": "Import contacts from a CSV",
+      "hasDeal": "Put your first deal on the board",
+      "hasTeammate": "Invite a teammate",
+      "hasCompletedTask": "Complete a task",
+      "stateDone": "done",
+      "stateTodo": "to do"
+    }
   },
   "import": {
     "title": "Import contacts",
@@ -583,7 +614,8 @@
     "languageBody": "Applies to the interface only. Records you create keep the wording you gave them.",
     "saved": "Saved.",
     "tabAutomation": "Automation",
-    "tabBilling": "Billing"
+    "tabBilling": "Billing",
+    "tabPrivacy": "Data & privacy"
   },
   "billing": {
     "title": "Billing",
@@ -667,7 +699,10 @@
       "planUpgradeRequired": "That feature needs the Pro plan.",
       "billingNotConfigured": "Billing is not configured on this deployment.",
       "billingUnavailable": "The payment provider could not be reached. Try again shortly.",
-      "noSubscription": "There is no subscription to manage yet."
+      "noSubscription": "There is no subscription to manage yet.",
+      "workspaceNotEmpty": "This workspace already has data, so sample data cannot be added.",
+      "orgNameMismatch": "That is not the organization's name.",
+      "exportUnavailable": "The export could not be generated. Try again in a moment."
     },
     "field": {
       "required": "This field is required.",
@@ -682,5 +717,50 @@
       "date": "Enter a valid date.",
       "range": "Enter a number in the allowed range."
     }
+  },
+  "privacy": {
+    "title": "Data & privacy",
+    "subtitle": "Export everything this workspace holds, or delete it for good. Both are self-serve, which is what the DSGVO asks for.",
+    "exportTitle": "Export your data",
+    "exportBody": "A complete copy of this organization: contacts, companies, deals, activities, tasks and import history. The JSON file keeps every field; the CSV files are for spreadsheets.",
+    "exportJson": "Everything as JSON",
+    "exportContacts": "Contacts as CSV",
+    "exportCompanies": "Companies as CSV",
+    "exportDeals": "Deals as CSV",
+    "exportTasks": "Tasks as CSV",
+    "exportActivities": "Activity feed as CSV",
+    "exportNote": "Very large workspaces are capped at 20,000 rows per collection. The JSON file reports the true totals so you can tell whether anything was cut.",
+    "adminOnly": "Only owners and admins can export a workspace.",
+    "subprocessorsTitle": "Subprocessors",
+    "subprocessorsBody": "The complete list of companies that process data on our behalf. All hosting is in the EU.",
+    "subprocessorPurpose": "Purpose",
+    "subprocessorLocation": "Location",
+    "dangerTitle": "Delete this organization",
+    "dangerBody": "Deletes this organization and everything inside it — contacts, companies, deals, activities, tasks and import history. Nothing survives. Export first.",
+    "graceNote": "Deletion is scheduled {days} days out, so a mistake is still recoverable until then.",
+    "deleteAction": "Schedule deletion",
+    "ownerOnly": "Only an owner can delete an organization.",
+    "dialogTitle": "Delete this organization?",
+    "dialogBody": "Everything in {name} is deleted after {days} days. You can cancel from this page until then, but not afterwards.",
+    "confirmLabel": "Type the organization's name to confirm",
+    "confirmHint": "Expected: {name}",
+    "confirmAction": "Schedule deletion",
+    "pendingTitle": "Deletion scheduled",
+    "pendingBody": "{name} and everything in it will be deleted on {date}.",
+    "pendingBanner": "This workspace is scheduled for deletion on {date}.",
+    "cancelAction": "Cancel deletion",
+    "scheduled": "Deletion scheduled for {date}.",
+    "cancelled": "Deletion cancelled. Nothing was removed."
+  },
+  "legal": {
+    "sectionTitle": "Legal",
+    "imprint": "Imprint",
+    "privacyPolicy": "Privacy policy",
+    "terms": "Terms of service",
+    "dpa": "Data processing agreement",
+    "germanOnly": "German is the legally binding version of these documents. Any translation is for convenience only.",
+    "lastUpdated": "As of {date}",
+    "draftWarning": "Draft. Every detail marked TODO has to be filled in before the first real customer signs up.",
+    "backToApp": "Back to the app"
   }
 }

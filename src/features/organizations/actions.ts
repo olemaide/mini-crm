@@ -25,10 +25,12 @@ import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE } from "@/i18n/config";
 import {
   acceptInvitationSchema,
   createOrganizationSchema,
+  deleteOrganizationSchema,
   invitationIdSchema,
   inviteMemberSchema,
   memberIdSchema,
   memberRoleSchema,
+  organizationIdSchema,
   switchOrganizationSchema,
   updateOrganizationSchema,
   updateProfileSchema,
@@ -306,6 +308,67 @@ export async function updateProfile(input: unknown): Promise<ActionResult<undefi
       path: "/",
     });
 
+    refresh();
+    return ok();
+  });
+}
+
+/**
+ * Schedules erasure of the whole tenant (DSGVO Art. 17).
+ *
+ * Everything that matters happens in `request_organization_deletion()`: the
+ * owner check, the name confirmation and the grace period. This wrapper exists
+ * to normalise the error and to keep the client out of the RPC — deliberately
+ * thin, because a second copy of the rules here is a second copy to get wrong.
+ */
+export async function requestOrganizationDeletion(
+  input: unknown,
+): Promise<ActionResult<{ scheduledFor: string }>> {
+  return runAction("org.requestDeletion", async ({ log }) => {
+    const parsed = parseInput(deleteOrganizationSchema, input);
+    if (!parsed.ok) return { ok: false, error: parsed.error };
+
+    const session = await getSession();
+    if (!session) return fail("notAuthenticated");
+    // The RPC checks ownership too; this only stops a request against an
+    // organization the user is not currently working in.
+    if (session.organization.id !== parsed.data.organizationId) return fail("notAuthorized");
+
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.rpc("request_organization_deletion", {
+      p_organization_id: parsed.data.organizationId,
+      p_confirm_name: parsed.data.confirmName,
+    });
+
+    if (error || !data) return fail(errorKeyForPostgres(error?.code));
+
+    log.warn(
+      { organizationId: parsed.data.organizationId, scheduledFor: data },
+      "organization deletion scheduled",
+    );
+    refresh();
+    return ok({ scheduledFor: data });
+  });
+}
+
+/** Calls off a scheduled erasure. Owners only, enforced in the RPC. */
+export async function cancelOrganizationDeletion(input: unknown): Promise<ActionResult<undefined>> {
+  return runAction("org.cancelDeletion", async ({ log }) => {
+    const parsed = parseInput(organizationIdSchema, input);
+    if (!parsed.ok) return { ok: false, error: parsed.error };
+
+    const session = await getSession();
+    if (!session) return fail("notAuthenticated");
+    if (session.organization.id !== parsed.data.organizationId) return fail("notAuthorized");
+
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.rpc("cancel_organization_deletion", {
+      p_organization_id: parsed.data.organizationId,
+    });
+
+    if (error) return fail(errorKeyForPostgres(error.code));
+
+    log.info({ organizationId: parsed.data.organizationId }, "organization deletion cancelled");
     refresh();
     return ok();
   });

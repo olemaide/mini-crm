@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { env } from "@/env";
 import { fail, ok, parseInput, runAction, type ActionResult } from "@/lib/actions";
 import { ACTIVE_ORG_COOKIE, AFTER_LOGIN_PATH, LOGIN_PATH } from "@/lib/auth/constants";
+import { byEmail, consumeRateLimit, type RateLimitName } from "@/lib/rate-limit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { defaultLocale, isLocale, LOCALE_COOKIE } from "@/i18n/config";
 import {
@@ -50,6 +51,21 @@ function authErrorKey(code: string | undefined, status: number | undefined): str
 }
 
 /**
+ * Trips the limiter for one email address, returning a failure to hand back.
+ *
+ * Keyed on the address rather than the IP: see lib/rate-limit.ts. The same
+ * `rateLimited` key Supabase's own 429 maps to, so a user cannot tell which
+ * layer stopped them — and does not need to, since the advice is identical.
+ */
+async function checkAuthRateLimit(
+  rule: RateLimitName,
+  email: string,
+): Promise<ActionResult<never> | null> {
+  const result = await consumeRateLimit(rule, byEmail(email));
+  return result.allowed ? null : fail("rateLimited");
+}
+
+/**
  * Absolute base URL for auth redirect links.
  *
  * Prefers the request's own origin so deploy previews link back to themselves
@@ -82,6 +98,9 @@ export async function signIn(input: unknown): Promise<ActionResult<undefined>> {
     const parsed = parseInput(signInSchema, input);
     if (!parsed.ok) return { ok: false, error: parsed.error };
 
+    const limited = await checkAuthRateLimit("auth.signIn", parsed.data.email);
+    if (limited) return limited;
+
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: parsed.data.email,
@@ -99,6 +118,9 @@ export async function signUp(
   return runAction("auth.signUp", async () => {
     const parsed = parseInput(signUpSchema, input);
     if (!parsed.ok) return { ok: false, error: parsed.error };
+
+    const limited = await checkAuthRateLimit("auth.signUp", parsed.data.email);
+    if (limited) return limited;
 
     const cookieStore = await cookies();
     const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
@@ -129,6 +151,9 @@ export async function sendMagicLink(input: unknown): Promise<ActionResult<undefi
     const parsed = parseInput(magicLinkSchema, input);
     if (!parsed.ok) return { ok: false, error: parsed.error };
 
+    const limited = await checkAuthRateLimit("auth.email", parsed.data.email);
+    if (limited) return limited;
+
     const siteUrl = await resolveSiteUrl();
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.auth.signInWithOtp({
@@ -145,6 +170,15 @@ export async function requestPasswordReset(input: unknown): Promise<ActionResult
   return runAction("auth.requestPasswordReset", async () => {
     const parsed = parseInput(resetPasswordRequestSchema, input);
     if (!parsed.ok) return { ok: false, error: parsed.error };
+
+    /*
+     * Reporting the limit here does not reintroduce the enumeration oracle
+     * below: the counter is keyed on the address as submitted, whether or not an
+     * account exists, so a 429 says "you have asked too often", never "that
+     * address is registered".
+     */
+    const limited = await checkAuthRateLimit("auth.email", parsed.data.email);
+    if (limited) return limited;
 
     const siteUrl = await resolveSiteUrl();
     const supabase = await createSupabaseServerClient();

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { LegalLinks } from "@/components/legal-links";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 
 /**
@@ -44,6 +45,10 @@ export async function AuthShell({
           {children}
           {footer ? <div className="mt-6 text-center text-sm">{footer}</div> : null}
         </div>
+      </div>
+
+      <div className="px-4 pb-6">
+        <LegalLinks />
       </div>
     </main>
   );

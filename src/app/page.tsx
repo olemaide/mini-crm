@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ActivityIcon, ArrowRightIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { LegalLinks } from "@/components/legal-links";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -9,9 +10,13 @@ import { getCurrentUser } from "@/lib/auth/session";
 /**
  * Public landing page.
  *
- * A placeholder for the marketing site built in Phase 9. When those pages land
- * they move into a locale-prefixed `[locale]/(marketing)` group for SEO; app
- * routes stay unprefixed and cookie-driven.
+ * Still a single screen rather than the full marketing site — hero, screenshots,
+ * pricing and FAQ are the remaining Phase 9 launch item. What it does carry now
+ * is the legal footer, which §5 DDG makes non-optional before the first visitor.
+ *
+ * When the marketing pages land they move into a locale-prefixed
+ * `[locale]/(marketing)` group for SEO; app routes stay unprefixed and
+ * cookie-driven.
  */
 export default async function HomePage() {
   const t = await getTranslations("home");
@@ -53,6 +58,10 @@ export default async function HomePage() {
           </Button>
         </div>
       </div>
+
+      <footer className="border-t px-4 py-6">
+        <LegalLinks />
+      </footer>
     </main>
   );
 }

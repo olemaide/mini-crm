@@ -77,6 +77,23 @@ export const acceptInvitationSchema = z.object({
   token: z.string().trim().min(1).max(200),
 });
 
+/**
+ * Scheduling erasure (Phase 9 / DSGVO Art. 17).
+ *
+ * `confirmName` is not compared here. The database does it, inside
+ * `request_organization_deletion()`, against the name as it is stored at that
+ * moment — comparing in the app would race a rename and would also make the
+ * check skippable by anyone calling the RPC directly.
+ */
+export const deleteOrganizationSchema = z.object({
+  organizationId: z.uuid(),
+  confirmName: z.string().trim().min(1, { message: "required" }).max(120),
+});
+
+export const organizationIdSchema = z.object({
+  organizationId: z.uuid(),
+});
+
 export type CreateOrganizationInput = z.infer<typeof createOrganizationSchema>;
 export type UpdateOrganizationInput = z.infer<typeof updateOrganizationSchema>;
 export type InviteMemberInput = z.infer<typeof inviteMemberSchema>;

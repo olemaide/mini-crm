@@ -81,9 +81,9 @@
     "change": "Sprache wechseln"
   },
   "home": {
-    "eyebrow": "Phase 4 · Pipeline",
-    "heading": "Das CRM-Grundgerüst steht",
-    "body": "Anmeldung, Organisationen, Kontakte, Firmen, CSV-Import und das Pipeline-Board sind aktiv. Aktivitäten-Feed und Aufgaben folgen als Nächstes.",
+    "eyebrow": "Ein kleines CRM für kleine deutsche Teams",
+    "heading": "Kontakte importieren. Jeden Deal sehen. Kein Follow-up vergessen.",
+    "body": "Kontakte und Firmen, eine Kanban-Pipeline mit gewichteter Prognose, CSV-Import mit Dublettenprüfung, ein Aktivitätsverlauf und automatische Folgeaufgaben. Gehostet in Frankfurt, ohne Tracker von Dritten.",
     "openApp": "Anwendung öffnen",
     "signIn": "Anmelden",
     "healthCheck": "Health-Check"
@@ -189,14 +189,45 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Eine reine Vorschau. Echte Zahlen kommen mit der Pipeline in Phase 4.",
+    "subtitle": "Der aktuelle Stand von {organization} — direkt aus Ihren Daten.",
     "openDeals": "Offene Deals",
     "pipelineValue": "Pipeline-Wert",
     "weightedValue": "Gewichteter Wert",
     "overdueTasks": "Überfällige Aufgaben",
-    "sampleNotice": "Beispieldaten — diese Werte sind fest hinterlegt, um die sprachabhängige Formatierung zu prüfen.",
+    "acrossStages": "{count, plural, =0 {Keine Phase belegt} one {In # Phase} other {In # Phasen}}",
+    "openOnly": "Nur offene Deals",
+    "weightedHint": "Gewichtet mit der Wahrscheinlichkeit je Phase",
+    "mineOverdue": "{count, plural, =0 {Keine davon Ihnen zugewiesen} one {# davon Ihnen zugewiesen} other {# davon Ihnen zugewiesen}}",
+    "dueToday": "{count, plural, =0 {Heute nichts fällig} one {# heute fällig} other {# heute fällig}}",
+    "thisMonth": "Diesen Monat",
+    "wonThisMonth": "Gewonnener Wert",
+    "wonCount": "Gewonnene Deals",
+    "contacts": "Kontakte",
+    "companies": "Firmen",
+    "byStage": "Pipeline nach Phase",
+    "openBoard": "Board öffnen",
+    "noStages": "Für diese Organisation ist noch keine Pipeline eingerichtet.",
+    "stageSummary": "{count} · {value}",
+    "emptyTitle": "Ihr Arbeitsbereich ist noch leer",
+    "emptyBody": "Füllen Sie ihn mit Beispieldaten, um Pipeline, Aufgaben und Aktivitäten in Aktion zu sehen — oder importieren Sie direkt Ihre eigenen Kontakte.",
+    "emptyImport": "Kontakte importieren",
+    "seedAction": "Mit Beispieldaten füllen",
+    "seeding": "Wird angelegt…",
+    "seedDone": "{contacts} Kontakte und {deals} Deals angelegt.",
+    "unavailableTitle": "Zahlen nicht verfügbar",
+    "unavailableBody": "Die Kennzahlen konnten nicht geladen werden. Laden Sie die Seite neu — Ihre Daten sind davon nicht betroffen.",
     "lastUpdated": "Zuletzt aktualisiert {date}",
-    "overdueCount": "{count, plural, =0 {Nichts überfällig} one {# Aufgabe überfällig} other {# Aufgaben überfällig}}"
+    "onboarding": {
+      "title": "Erste Schritte",
+      "progress": "{done}/{total}",
+      "hasContacts": "Ersten Kontakt anlegen",
+      "hasImported": "Kontakte aus einer CSV importieren",
+      "hasDeal": "Ersten Deal auf das Board legen",
+      "hasTeammate": "Eine Kollegin oder einen Kollegen einladen",
+      "hasCompletedTask": "Eine Aufgabe abschließen",
+      "stateDone": "erledigt",
+      "stateTodo": "offen"
+    }
   },
   "import": {
     "title": "Kontakte importieren",
@@ -583,7 +614,8 @@
     "languageBody": "Gilt nur für die Oberfläche. Von Ihnen angelegte Datensätze behalten den Wortlaut, den Sie vergeben haben.",
     "saved": "Gespeichert.",
     "tabAutomation": "Automatisierung",
-    "tabBilling": "Abrechnung"
+    "tabBilling": "Abrechnung",
+    "tabPrivacy": "Daten & Datenschutz"
   },
   "billing": {
     "title": "Abrechnung",
@@ -667,7 +699,10 @@
       "planUpgradeRequired": "Diese Funktion erfordert den Pro-Tarif.",
       "billingNotConfigured": "Die Abrechnung ist in dieser Installation nicht konfiguriert.",
       "billingUnavailable": "Der Zahlungsanbieter war nicht erreichbar. Bitte gleich noch einmal versuchen.",
-      "noSubscription": "Es gibt noch kein Abo zum Verwalten."
+      "noSubscription": "Es gibt noch kein Abo zum Verwalten.",
+      "workspaceNotEmpty": "Dieser Arbeitsbereich enthält bereits Daten — Beispieldaten lassen sich nicht mehr hinzufügen.",
+      "orgNameMismatch": "Das ist nicht der Name der Organisation.",
+      "exportUnavailable": "Der Export konnte nicht erstellt werden. Versuchen Sie es in einem Moment erneut."
     },
     "field": {
       "required": "Dieses Feld ist erforderlich.",
@@ -682,5 +717,50 @@
       "date": "Bitte ein gültiges Datum eingeben.",
       "range": "Bitte eine Zahl im erlaubten Bereich eingeben."
     }
+  },
+  "privacy": {
+    "title": "Daten & Datenschutz",
+    "subtitle": "Exportieren Sie alles, was dieser Arbeitsbereich enthält — oder löschen Sie ihn endgültig. Beides ohne Rückfrage bei uns, so wie es die DSGVO vorsieht.",
+    "exportTitle": "Daten exportieren",
+    "exportBody": "Eine vollständige Kopie dieser Organisation: Kontakte, Firmen, Deals, Aktivitäten, Aufgaben und Importverlauf. Die JSON-Datei enthält jedes Feld, die CSV-Dateien sind für Tabellenkalkulationen.",
+    "exportJson": "Alles als JSON",
+    "exportContacts": "Kontakte als CSV",
+    "exportCompanies": "Firmen als CSV",
+    "exportDeals": "Deals als CSV",
+    "exportTasks": "Aufgaben als CSV",
+    "exportActivities": "Aktivitäten als CSV",
+    "exportNote": "Sehr große Arbeitsbereiche werden auf 20.000 Zeilen pro Sammlung begrenzt. Die JSON-Datei nennt die tatsächlichen Gesamtzahlen, damit Sie erkennen, ob etwas fehlt.",
+    "adminOnly": "Nur Inhaber und Administratoren können einen Arbeitsbereich exportieren.",
+    "subprocessorsTitle": "Auftragsverarbeiter",
+    "subprocessorsBody": "Die vollständige Liste der Unternehmen, die in unserem Auftrag Daten verarbeiten. Das Hosting erfolgt vollständig in der EU.",
+    "subprocessorPurpose": "Zweck",
+    "subprocessorLocation": "Standort",
+    "dangerTitle": "Diese Organisation löschen",
+    "dangerBody": "Löscht diese Organisation und alles darin — Kontakte, Firmen, Deals, Aktivitäten, Aufgaben und Importverlauf. Es bleibt nichts übrig. Exportieren Sie vorher.",
+    "graceNote": "Die Löschung wird auf {days} Tage vorgemerkt — bis dahin ist ein Versehen noch korrigierbar.",
+    "deleteAction": "Löschung vormerken",
+    "ownerOnly": "Nur ein Inhaber kann eine Organisation löschen.",
+    "dialogTitle": "Diese Organisation löschen?",
+    "dialogBody": "Alle Daten von {name} werden nach {days} Tagen gelöscht. Bis dahin können Sie den Vorgang auf dieser Seite abbrechen, danach nicht mehr.",
+    "confirmLabel": "Geben Sie zur Bestätigung den Namen der Organisation ein",
+    "confirmHint": "Erwartet: {name}",
+    "confirmAction": "Löschung vormerken",
+    "pendingTitle": "Löschung vorgemerkt",
+    "pendingBody": "{name} und alle Daten darin werden am {date} gelöscht.",
+    "pendingBanner": "Dieser Arbeitsbereich ist zur Löschung am {date} vorgemerkt.",
+    "cancelAction": "Löschung abbrechen",
+    "scheduled": "Löschung für den {date} vorgemerkt.",
+    "cancelled": "Löschung abgebrochen. Es wurde nichts entfernt."
+  },
+  "legal": {
+    "sectionTitle": "Rechtliches",
+    "imprint": "Impressum",
+    "privacyPolicy": "Datenschutzerklärung",
+    "terms": "AGB",
+    "dpa": "AV-Vertrag",
+    "germanOnly": "Rechtsverbindlich ist ausschließlich die deutsche Fassung dieser Dokumente. Übersetzungen dienen nur der Verständlichkeit.",
+    "lastUpdated": "Stand: {date}",
+    "draftWarning": "Entwurf. Alle mit TODO markierten Angaben müssen vor der ersten echten Anmeldung ergänzt werden.",
+    "backToApp": "Zurück zur Anwendung"
   }
 }

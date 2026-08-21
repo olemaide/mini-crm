@@ -59,6 +59,9 @@ const PG_ERROR_KEYS: Record<string, string> = {
   P0002: "invitationInvalid",
   P0003: "invitationWrongEmail",
   P0004: "alreadyMember",
+  // Raised by request_organization_deletion() when the typed confirmation does
+  // not match the organization's name.
+  P0008: "orgNameMismatch",
   "42501": "notAuthorized",
   "23505": "duplicate",
   "23503": "referenceMissing",

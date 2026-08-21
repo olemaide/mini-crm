@@ -8,10 +8,24 @@ Build plan: [`../MINI-CRM-MVP-PLAN.md`](../MINI-CRM-MVP-PLAN.md) — read it bef
 adding anything. It sets out the phases, the schema, and the decisions that have
 already been made and closed.
 
-**Current status: Phase 8 complete.** Sign-in, organizations, roles, team
+**Current status: Phase 9 code complete.** Sign-in, organizations, roles, team
 invitations, contacts, companies, CSV import, the Kanban pipeline, the activity
 feed, follow-up tasks, ⌘K search and Polar billing all work against a live
-Supabase project in `eu-central-1`. Hardening and launch (Phase 9) is next.
+Supabase project in `eu-central-1`. Phase 9 added a nonce-based CSP, a Postgres
+rate limiter, self-serve export and erasure, the German legal pages, a live
+dashboard and the sample-data seeder.
+
+What is still open before real customers, none of it code:
+
+- **Custom SMTP in Supabase Auth.** The built-in sender is rate-limited and
+  explicitly not for production — a launch blocker (§1.6).
+- **Leaked-password protection**, one dashboard toggle.
+- **The `TODO:` entries in `src/lib/legal/documents.ts`** — legal entity, address,
+  register number, VAT id. The pages show a red draft warning until they are gone.
+- **Two scheduled jobs** (`purge_due_organizations`, `prune_rate_limits`). The
+  migrations deliberately do not `create extension pg_cron`, because CI replays
+  them against a plain Postgres image; see `RELEASE-CHECKLIST.md` §7d.
+- **Marketing site, help articles and the uptime monitor.**
 
 Billing runs against the **Polar sandbox** and needs `POLAR_ACCESS_TOKEN` set
 before checkout will open — until then the billing page renders a "not
@@ -237,6 +251,88 @@ company_id, deal_id) = 1`. Roll-up (a deal's feed showing its contact's
   real subscription change over a new field would be a silent revenue bug.
 - Sandbox and production are **different Polar hosts**; `POLAR_SERVER` picks one.
   Getting it wrong means checkouts that never become real money.
+
+### Security headers and CSP
+
+- **The CSP lives in `proxy.ts`, not `next.config.ts`.** It carries a per-request
+  script nonce, which static config cannot generate. The other headers (HSTS,
+  `X-Frame-Options`, `Referrer-Policy`, `X-Content-Type-Options`,
+  `Permissions-Policy`) stay in `next.config.ts` because they never vary.
+- **Never add a second CSP.** Browsers enforce every policy they are sent, so a
+  nonce-less copy would block the scripts the nonced one allows.
+- **`style-src` allows `'unsafe-inline'` on purpose.** A nonce cannot be attached
+  to an inline `style` _attribute_, and dnd-kit writes one on every dragged card.
+  Style injection is defacement; `script-src` is where the real protection is and
+  that one is strict.
+- **Nonces force dynamic rendering.** Nothing is statically optimised. Every
+  authenticated route was cookie-driven already; the marketing and legal pages are
+  what this actually costs.
+
+### Rate limiting
+
+- **The counter is a Postgres row**, not Redis. Netlify functions share no
+  memory, so an in-process counter protects nothing — and a fourth subprocessor
+  to name in the AV-Vertrag is a real cost for a single-row update.
+- **Fixed window, not a sliding log.** A sliding window needs a row per hit,
+  turning a login flood into a write flood. The trade-off is 2× burst across a
+  window boundary, accepted knowingly.
+- **Buckets are hashed at the call site.** An email address in `rate_limits`
+  would turn an infrastructure table into a register of who tried to sign in.
+- **It fails open.** If the limiter is unreachable the request proceeds and the
+  failure logs at error level: a limiter that fails closed turns one bad
+  connection into a total outage, including for whoever is trying to fix it.
+  Supabase Auth's own limits remain underneath.
+- **Only `service_role` may call `consume_rate_limit`.** Granting `authenticated`
+  would let any signed-in user burn someone else's budget by guessing a bucket.
+
+### GDPR: export and erasure
+
+- **Export is a Route Handler, not a Server Action**, because the product is a
+  file. `Content-Disposition` gets the filename, the content type and the
+  browser's own download UI; an action would buffer the whole tenant twice.
+- **`export_organization()` uses `to_jsonb(row)`**, so a column added in a later
+  phase appears in the export automatically. Hand-listing columns fails silently
+  and in the worst direction.
+- **CSV cells beginning `=`, `+`, `-` or `@` are prefixed with an apostrophe.**
+  Otherwise a note starting `=cmd|…` is a CSV injection against whoever opens
+  the file in Excel.
+- **Erasure is two-step.** Phase 1 shipped a policy letting any owner
+  `delete from organizations` straight through PostgREST — no confirmation, no
+  export, no way back. That policy is gone; deletion is now _scheduled_ with a
+  30-day grace period and carried out by `purge_due_organizations()`.
+- **The three `deletion_*` columns are guarded by a trigger.** The table-wide
+  admin UPDATE policy would otherwise let one PATCH skip both the confirmation
+  and the grace period. The trigger only yields to a transaction-local GUC that
+  nothing reachable through PostgREST can set.
+- **`auth.users` rows survive tenant deletion.** A person may belong to several
+  organizations; erasing one must not sign them out of another.
+
+### The dashboard
+
+- **Every figure comes from `dashboard_summary()` in one round trip.** Fetching
+  pages of deals and summing them in JavaScript is both N+1 and wrong — a
+  paginated sum under-reports the moment a tenant outgrows one page, which is
+  exactly when the number starts to matter.
+- **Day and month boundaries are passed in from the app.** "Today" and "this
+  month" depend on the organization's timezone, and that arithmetic already lives
+  in `lib/tasks/due.ts`. A second implementation in SQL would disagree across a
+  DST boundary.
+- **The onboarding checklist is derived, never stored.** A `has_imported` flag
+  would go stale the first time someone undid an import.
+- **The demo seeder writes through the ordinary RLS-scoped client**, not a
+  definer RPC, so triggers, policies and entitlement checks all fire and the
+  seeded tenant is indistinguishable from a hand-typed one. It refuses on a
+  non-empty workspace, which is why there is no "remove sample data" to build.
+
+### Legal pages
+
+- The four documents live in `src/lib/legal/documents.ts` as **data, not message
+  keys**. They are binding in German only; a translation in `messages/en.json`
+  would read as an equally valid version of a contract.
+- `hasUnfilledDetails()` scans for `TODO:` and renders a visible draft warning, so
+  an unfinished Impressum cannot quietly go live. In Germany that is an
+  `Abmahnung` waiting to happen.
+- `/impressum` and friends are public and must stay out of `PROTECTED_PREFIXES`.
 
 ### Lists and pagination
 

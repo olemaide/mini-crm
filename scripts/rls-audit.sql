@@ -32,7 +32,9 @@ declare
    * other check. Every entry needs a reason.
    */
   no_policy_tables constant text[] := array[
-    'billing_events'  -- webhook log; written by the service role, read by nobody
+    'billing_events', -- webhook log; written by the service role, read by nobody
+    'rate_limits'     -- infrastructure counters; consume_rate_limit() is granted
+                      -- to service_role alone, so no client role may touch them
   ];
   problems text[] := '{}';
   rec record;

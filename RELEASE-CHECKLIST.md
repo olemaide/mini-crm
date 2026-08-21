@@ -94,6 +94,60 @@ The one failure that ends the business rather than annoying a user.
       with a direct PostgREST call, not just through the form
 - [ ] The pricing table reads `19,00 €` in German and `€19.00` in English
 
+## 7b. Dashboard · Phase 9
+
+- [ ] The four stat cards match the pipeline board: sum the column totals by hand
+      once and confirm the pipeline value agrees
+- [ ] Weighted value is lower than pipeline value, and changes when a deal is
+      dragged to a stage with a different probability
+- [ ] Overdue count matches the Overdue tab, and the sidebar badge
+- [ ] "Won value" only counts deals closed in the **current** month, in the
+      organization's timezone — test with a deal closed on the 1st at 00:30
+- [ ] The onboarding checklist disappears once all five steps are done
+- [ ] On a brand-new organization, "Fill with sample data" produces five
+      companies, five contacts, five deals, four tasks (one overdue) and two
+      notes — and the button is gone afterwards
+- [ ] Clicking it a second time (via a stale tab) is refused, not duplicated
+
+## 7c. Security hardening · Phase 9
+
+- [ ] `Content-Security-Policy` is present on an app page and carries a
+      `nonce-…`; every `<script>` in view-source has the **same** nonce
+- [ ] Browser console is free of CSP violations on: pipeline board (drag a card),
+      import wizard (run a file), ⌘K search, every dialog
+- [ ] Eleven failed sign-ins for one address are refused with "too many attempts"
+      and the twelfth still is; a _different_ address is unaffected
+- [ ] A password-reset flood is refused after three requests in an hour
+- [ ] `select * from rate_limits` contains **no** email addresses — only hashes
+- [ ] `pnpm db:audit` and the `rls-audit` CI job are both green (the job now
+      bootstraps a Supabase-shaped schema first; before Phase 9 it never ran)
+- [ ] Leaked-password protection is **on** in Supabase Auth
+- [ ] Custom SMTP is configured in Supabase Auth — the built-in sender is
+      rate-limited and not for production (§1.6, launch blocker)
+- [ ] `get_advisors` reports no ERROR-level security or performance lints
+
+## 7d. GDPR / DSGVO · Phase 9
+
+- [ ] Settings → Data & privacy: the JSON export downloads and its `counts`
+      match what the UI shows; `memberEmails` is populated
+- [ ] Each CSV export opens in Excel with umlauts intact
+- [ ] A note beginning `=cmd|' /C calc'!A0` exports as a **text** cell, not a
+      formula
+- [ ] A member (not admin) sees "only owners and admins can export"
+- [ ] Deleting an organization requires retyping its name; a near-miss is refused
+- [ ] After scheduling, the red banner appears on **every** page, and Cancel
+      restores the workspace with nothing lost
+- [ ] An admin cannot set `deletion_scheduled_for` via a direct PostgREST PATCH
+- [ ] `select * from organizations where deletion_scheduled_for is not null`
+      is empty before going live
+- [ ] `purge_due_organizations()` and `prune_rate_limits()` are scheduled —
+      pg_cron is not installed by the migrations on purpose (it would break the
+      CI audit), so this is a one-time dashboard step:
+      `select cron.schedule('purge-deleted-orgs', '0 4 * * *', $$select public.purge_due_organizations()$$);`
+- [ ] `/impressum`, `/datenschutz`, `/agb`, `/av-vertrag` all load, and **none**
+      of them still shows the red draft warning
+- [ ] The legal footer is reachable from the landing page and every auth screen
+
 ## 8. Localization · Phase 0
 
 - [ ] Switch `en` ⇄ `de` on the five main screens
