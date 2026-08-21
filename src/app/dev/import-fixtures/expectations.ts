@@ -16,8 +16,14 @@ export type FixtureExpectation = {
    * Directory relative to the repo root. Defaults to the fixture corpus; the
    * downloadable templates live in `public/` and are checked here too, because
    * a template is a promise to the user about what the importer accepts.
+   *
+   * A literal union rather than `string`, deliberately. The harness resolves it
+   * to a hard-coded path so Turbopack can see the filesystem access is scoped to
+   * a known subfolder — with a free-form string it traced the *entire project*
+   * into the deployed server bundle. Adding a third root has to be a conscious
+   * edit in both places, which is the point.
    */
-  dir?: string;
+  dir?: "public";
   /** Why this file exists — shown in the harness so a failure is legible. */
   purpose: string;
   encoding: DetectedEncoding;

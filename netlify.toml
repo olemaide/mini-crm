@@ -7,6 +7,21 @@
   PNPM_VERSION = "11"
   # Netlify installs @netlify/plugin-nextjs automatically for Next.js sites.
 
+  # Secrets scanning greps the repo and the build output for the *value* of every
+  # environment variable configured on the site. These two hold ordinary words —
+  # LOG_LEVEL is "debug", POLAR_SERVER is "sandbox" — so the scan matched them in
+  # `src/env.ts` (whose zod enums list the allowed values), in `pnpm-lock.yaml`
+  # (package names containing "debug"), in the `# debug` section of `.gitignore`,
+  # and in the docs. All legitimate, and the build failed on every one of them.
+  #
+  # Neither variable is a secret: one is log verbosity, the other selects Polar's
+  # sandbox or production host. Omitting the two keys keeps scanning fully active
+  # for the values that genuinely must never appear in the repo —
+  # SUPABASE_SERVICE_ROLE_KEY, POLAR_ACCESS_TOKEN and POLAR_WEBHOOK_SECRET. Do
+  # not reach for SECRETS_SCAN_ENABLED=false here; that would disable the check
+  # that protects those.
+  SECRETS_SCAN_OMIT_KEYS = "LOG_LEVEL,POLAR_SERVER"
+
 # Netlify's post-processing must stay off. Its "pretty URLs" rewriter 308s every
 # path to a trailing-slash variant, which Next.js (trailingSlash: false) then
 # 307s straight back — an infinite loop that makes the whole site, and every

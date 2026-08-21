@@ -154,6 +154,21 @@ The one failure that ends the business rather than annoying a user.
 - [ ] No missing keys, no clipped or broken labels at 1280px **and** 375px
 - [ ] Dates, numbers and currency reformat (`1.234,56 €` vs `€1,234.56`)
 
+## 8b. Netlify build configuration · Phase 9
+
+- [ ] `NEXT_PUBLIC_APP_URL` uses **https**. It feeds `resolveSiteUrl()`, which
+      builds the password-reset and email-confirmation links — an `http://` origin
+      emails a credential-bearing URL in plaintext
+- [ ] Adding a new environment variable? If its **value** is an ordinary word,
+      secrets scanning will fail the build. It greps the repo for the value, not
+      the name, so `LOG_LEVEL=debug` matched `# debug` in `.gitignore` and the
+      zod enum in `src/env.ts`. Add such keys to `SECRETS_SCAN_OMIT_KEYS` in
+      `netlify.toml` — **never** set `SECRETS_SCAN_ENABLED=false`, which is what
+      protects the service-role key and the Polar token
+- [ ] No new dynamic `path.join(process.cwd(), someVariable)`. Turbopack traces
+      the whole project into the server bundle when it cannot bound the path, and
+      warns it may breach the function size limit. Scope it to a literal subfolder
+
 ## 9. Post-deploy · Phase 0
 
 - [ ] `/api/health` returns 200 with `"database": "ok"`

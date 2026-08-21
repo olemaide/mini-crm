@@ -55,9 +55,20 @@ async function runFixture(expectation: FixtureExpectation): Promise<{
   checks: Check[];
   fatal: string | null;
 }> {
-  const path = expectation.dir
-    ? join(process.cwd(), expectation.dir, expectation.file)
-    : join(process.cwd(), "fixtures", "csv", expectation.file);
+  /*
+   * Both roots are string literals, not `expectation.dir` interpolated in.
+   *
+   * That looks like a pointless expansion of one line and is not. Turbopack does
+   * static analysis on filesystem access: with a variable directory it cannot
+   * bound the path, so it traced the whole project — every source file and the
+   * entire `public/` folder — into the deployed server bundle. The build log says
+   * so outright, and warns it can breach the function size limit. Literals let it
+   * scope the trace to these two folders.
+   */
+  const path =
+    expectation.dir === "public"
+      ? join(process.cwd(), "public", expectation.file)
+      : join(process.cwd(), "fixtures", "csv", expectation.file);
 
   let buffer: Buffer;
   try {
