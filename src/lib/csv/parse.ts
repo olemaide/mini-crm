@@ -45,6 +45,35 @@ export function parseCsv(buffer: ArrayBuffer, filename: string): ParseSuccess | 
     filename.endsWith(".tsv") ? "\t" : ",",
   );
 
+  /*
+   * The blank-header check has to run on the raw text, before Papaparse.
+   *
+   * `skipEmptyLines: "greedy"` discards a line containing only delimiters, so a
+   * file starting `;;;` had that row removed and the first *data* row silently
+   * promoted to the header — consuming one contact and filling the mapping UI
+   * with a person's name as column titles. The post-parse check that was
+   * supposed to catch this could never fire, because every row Papaparse
+   * returned had at least one non-empty cell by construction.
+   *
+   * Splitting on newlines is not a full CSV parse and does not need to be: a
+   * quoted field spanning lines always has content on its first line, so it can
+   * never look all-delimiter here.
+   *
+   * A line counts as the header candidate if it *contains the delimiter* or has
+   * any content. The delimiter clause is what makes this work for a TSV: a line
+   * of only tabs is whitespace as far as `trim()` is concerned, so testing
+   * content alone would skip it as blank and promote the data row after it —
+   * exactly the bug being fixed. Genuinely blank leading lines, including ones
+   * padded with spaces, are still skipped harmlessly.
+   */
+  const headerLine = text
+    .split(/\r?\n/)
+    .find((line) => line.includes(delimiter) || line.trim() !== "");
+
+  if (headerLine === undefined || headerLine.split(delimiter).every((c) => c.trim() === "")) {
+    return { ok: false, error: "noHeader" };
+  }
+
   const result = Papa.parse<string[]>(text, {
     delimiter,
     header: false,
@@ -58,10 +87,11 @@ export function parseCsv(buffer: ArrayBuffer, filename: string): ParseSuccess | 
   const allRows = (result.data ?? []).filter((row) => Array.isArray(row) && row.length > 0);
   if (allRows.length === 0) return { ok: false, error: "empty" };
 
+  // The all-blank case is already handled above, on the raw text. This only
+  // narrows the type — `allRows.length > 0` guarantees a first element, but
+  // `noUncheckedIndexedAccess` does not know that.
   const [headerRow, ...dataRows] = allRows;
-  if (!headerRow || headerRow.every((cell) => (cell ?? "").trim() === "")) {
-    return { ok: false, error: "noHeader" };
-  }
+  if (!headerRow) return { ok: false, error: "noHeader" };
 
   if (dataRows.length > MAX_IMPORT_ROWS) return { ok: false, error: "tooManyRows" };
 

@@ -13,6 +13,19 @@
 # testing
 /coverage
 
+# The Vitest suite, by project decision. Every test lives in /tests, flattened,
+# with the filename recording its subject: lib.csv.rows.test.ts covers
+# src/lib/csv/rows.ts.
+#
+# Consequence, stated so nobody rediscovers it the hard way: the tests are NOT
+# in version control, so CI cannot run them and a fresh clone has none. The
+# `pnpm test` step was removed from .github/workflows/ci.yml for that reason, and
+# vitest.config.mts sets `passWithNoTests` so `pnpm verify` still succeeds for
+# someone who has not written them locally. Running the suite is a local
+# discipline; the automated nets that remain are the RLS audit, the typecheck,
+# the lint and the manual release checklist.
+/tests
+
 # next.js
 /.next/
 /out/

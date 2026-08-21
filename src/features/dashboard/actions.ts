@@ -6,6 +6,14 @@ import { errorKeyForPostgres, fail, ok, runAction, type ActionResult } from "@/l
 import { isAtLeastAdmin, requireSession } from "@/lib/auth/session";
 import { requireEntitlement } from "@/features/billing/entitlements";
 import { getOrCreateDefaultPipeline } from "@/features/deals/queries";
+import {
+  countryForOrg,
+  normalizeDomain,
+  normalizeEmail,
+  normalizeName,
+  normalizePhone,
+  normalizeText,
+} from "@/lib/normalize";
 import { demoDataset } from "@/lib/seed/demo";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -92,9 +100,9 @@ export async function seedDemoData(): Promise<ActionResult<{ contacts: number; d
         dataset.companies.map((company) => ({
           organization_id: organizationId,
           name: company.name,
-          domain: company.domain,
-          industry: company.industry,
-          city: company.city,
+          domain: normalizeDomain(company.domain),
+          industry: normalizeText(company.industry, 100),
+          city: normalizeText(company.city, 100),
           country: company.country,
           owner_id: session.user.id,
         })),
@@ -113,18 +121,26 @@ export async function seedDemoData(): Promise<ActionResult<{ contacts: number; d
         .filter((entry): entry is readonly [string, string] => Boolean(entry[1])),
     );
 
-    // -------------------------------------------------------------- contacts
+    /*
+     * Contacts go through the shared normalisers, like every other write path
+     * (convention 14). The seeder skipped them at first, which left demo phone
+     * numbers formatted as typed ("+49 711 1234567") while a hand-entered
+     * contact became "+497111234567" — the sample data would have demonstrated
+     * an inconsistency the product does not actually have.
+     */
+    const country = countryForOrg(session.organization.timezone);
+
     const { data: contacts, error: contactError } = await supabase
       .from("contacts")
       .insert(
         dataset.contacts.map((contact) => ({
           organization_id: organizationId,
           company_id: companyIdByKey.get(contact.companyKey) ?? null,
-          first_name: contact.firstName,
-          last_name: contact.lastName,
-          email: contact.email,
-          phone: contact.phone,
-          job_title: contact.jobTitle,
+          first_name: normalizeName(contact.firstName),
+          last_name: normalizeName(contact.lastName),
+          email: normalizeEmail(contact.email),
+          phone: normalizePhone(contact.phone, country),
+          job_title: normalizeText(contact.jobTitle, 150),
           owner_id: session.user.id,
         })),
       )

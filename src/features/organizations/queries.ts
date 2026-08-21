@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { OrgRole } from "@/lib/auth/session";
 
@@ -60,11 +62,18 @@ export type PendingDeletion = {
  * A scheduled erasure, if there is one.
  *
  * Read on every authenticated page so the banner cannot be missed — the one
- * notice where "they probably saw it in Settings" is not good enough. It is a
- * single-row primary-key lookup on a table the session already touched, so the
- * cost is a cache hit rather than a query.
+ * notice where "they probably saw it in Settings" is not good enough. That means
+ * the app layout asks for it on every request, and on /settings/privacy the page
+ * asks again in the same render pass.
+ *
+ * `cache()` collapses those into one query, the same way `getSession()` does.
+ * Note this is per-render memoisation, not a data cache: the value is never
+ * carried across requests, so a deletion cancelled a second ago is gone from the
+ * banner on the very next render.
  */
-export async function getPendingDeletion(organizationId: string): Promise<PendingDeletion | null> {
+export const getPendingDeletion = cache(async function getPendingDeletion(
+  organizationId: string,
+): Promise<PendingDeletion | null> {
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -79,7 +88,7 @@ export async function getPendingDeletion(organizationId: string): Promise<Pendin
     requestedAt: data.deletion_requested_at ?? data.deletion_scheduled_for,
     scheduledFor: data.deletion_scheduled_for,
   };
-}
+});
 
 /** Pending invitations. Admin-only by RLS; members get an empty list. */
 export async function getPendingInvitations(organizationId: string): Promise<InvitationRow[]> {

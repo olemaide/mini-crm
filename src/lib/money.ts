@@ -118,7 +118,15 @@ export function parseMoneyToCents(input: string | number | null | undefined): nu
   if (integerPart === "" && fractionPart === "") return null;
   if (!/^\d*$/.test(integerPart) || !/^\d*$/.test(fractionPart)) return null;
 
-  // Round rather than truncate at more than two decimals: 1,005 -> 101 cents.
+  /*
+   * Round rather than truncate at more than two decimals: `1.2355` -> 124 cents.
+   *
+   * The example used to read `1,005 -> 101`, which is wrong and actively
+   * misleading: `1,005` never reaches this line as a decimal, because the
+   * group-of-three tie-break above classifies it as a thousands group (100500
+   * cents). The fixture table made the same mistake once and corrected it — see
+   * the note in dev/import-fixtures/money-cases.ts. Both are pinned by tests now.
+   */
   const cents =
     Number(integerPart || "0") * 100 + Math.round(Number(`0.${fractionPart || "0"}`) * 100);
 

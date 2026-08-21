@@ -367,8 +367,34 @@ const AVV: LegalDocument = {
   intro:
     "Dieser Vertrag nach Art. 28 DSGVO ist Bestandteil des Hauptvertrags und gilt mit der Nutzung von Mini CRM als geschlossen. Er kann zusätzlich unterschrieben werden; eine unterschriftsreife Fassung stellen wir auf Anfrage bereit.",
   sections: [
+    /*
+     * The parties, named. A DPA that does not identify the processor is not a
+     * contract, and this section is also what makes the draft warning fire on
+     * this page: before it existed the AV-Vertrag was the only one of the four
+     * with no `TODO:` in it, so it rendered as though it were finished while the
+     * other three were visibly drafts. A unit test caught that.
+     */
     {
-      heading: "1. Gegenstand und Rollen",
+      heading: "1. Vertragsparteien",
+      blocks: [
+        {
+          kind: "definitions",
+          items: [
+            {
+              term: "Auftragsverarbeiter",
+              description: `${PROVIDER.legalName}, ${PROVIDER.street}, ${PROVIDER.city}, ${PROVIDER.country}`,
+            },
+            {
+              term: "Verantwortlicher",
+              description:
+                "Der Kunde, wie in der Organisation und den Rechnungsdaten des Kontos hinterlegt.",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      heading: "2. Gegenstand und Rollen",
       blocks: [
         {
           kind: "paragraph",
@@ -377,7 +403,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "2. Art der Daten und Kreis der Betroffenen",
+      heading: "3. Art der Daten und Kreis der Betroffenen",
       blocks: [
         {
           kind: "definitions",
@@ -397,7 +423,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "3. Weisungsbindung",
+      heading: "4. Weisungsbindung",
       blocks: [
         {
           kind: "paragraph",
@@ -406,7 +432,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "4. Technische und organisatorische Maßnahmen (Art. 32 DSGVO)",
+      heading: "5. Technische und organisatorische Maßnahmen (Art. 32 DSGVO)",
       blocks: [
         {
           kind: "list",
@@ -424,7 +450,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "5. Unterauftragsverarbeiter",
+      heading: "6. Unterauftragsverarbeiter",
       blocks: [
         {
           kind: "paragraph",
@@ -440,7 +466,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "6. Unterstützung des Verantwortlichen",
+      heading: "7. Unterstützung des Verantwortlichen",
       blocks: [
         {
           kind: "paragraph",
@@ -449,7 +475,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "7. Meldung von Verletzungen",
+      heading: "8. Meldung von Verletzungen",
       blocks: [
         {
           kind: "paragraph",
@@ -458,7 +484,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "8. Löschung und Rückgabe",
+      heading: "9. Löschung und Rückgabe",
       blocks: [
         {
           kind: "paragraph",
@@ -467,7 +493,7 @@ const AVV: LegalDocument = {
       ],
     },
     {
-      heading: "9. Kontrollrechte",
+      heading: "10. Kontrollrechte",
       blocks: [
         {
           kind: "paragraph",

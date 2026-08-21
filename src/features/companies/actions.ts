@@ -12,7 +12,13 @@ import {
 } from "@/lib/actions";
 import { requireEntitlement } from "@/features/billing/entitlements";
 import { getSession } from "@/lib/auth/session";
-import { normalizeDomain, normalizePhone, normalizeText, normalizeWebsite } from "@/lib/normalize";
+import {
+  countryForOrg,
+  normalizeDomain,
+  normalizePhone,
+  normalizeText,
+  normalizeWebsite,
+} from "@/lib/normalize";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   companyIdSchema,
@@ -22,7 +28,10 @@ import {
   type CompanyFormValues,
 } from "./schema";
 
-function normalizeCompany(values: CompanyFormValues, countryCode: string) {
+function normalizeCompany(
+  values: CompanyFormValues,
+  countryCode: ReturnType<typeof countryForOrg>,
+) {
   return {
     name: normalizeText(values.name, 200) ?? values.name,
     // Accepts a pasted URL or email address and reduces it to a bare domain,
@@ -30,7 +39,7 @@ function normalizeCompany(values: CompanyFormValues, countryCode: string) {
     domain: normalizeDomain(values.domain),
     industry: normalizeText(values.industry, 100),
     website: normalizeWebsite(values.website),
-    phone: normalizePhone(values.phone, countryCode as Parameters<typeof normalizePhone>[1]),
+    phone: normalizePhone(values.phone, countryCode),
     address_line1: normalizeText(values.addressLine1, 200),
     postal_code: normalizeText(values.postalCode, 20),
     city: normalizeText(values.city, 100),
@@ -38,13 +47,6 @@ function normalizeCompany(values: CompanyFormValues, countryCode: string) {
     notes: normalizeText(values.notes, 10000),
     owner_id: values.ownerId,
   };
-}
-
-function countryForOrg(timezone: string): string {
-  if (timezone === "Europe/Vienna") return "AT";
-  if (timezone === "Europe/Zurich") return "CH";
-  if (timezone === "Europe/London") return "GB";
-  return "DE";
 }
 
 export async function createCompany(input: unknown): Promise<ActionResult<{ id: string }>> {

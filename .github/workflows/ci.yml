@@ -36,6 +36,10 @@ jobs:
         # i18n:check:strict so a missing translation fails the build.
         run: pnpm i18n:check
 
+      # No unit-test step on purpose: /tests is git-ignored by project decision,
+      # so the files are not in the checkout and there is nothing here to run.
+      # `pnpm test` is a local command. See the note in .gitignore.
+
       - name: Build
         run: pnpm build
         env:

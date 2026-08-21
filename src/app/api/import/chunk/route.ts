@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { importChunkSchema } from "@/features/import/schema";
 import { getSession } from "@/lib/auth/session";
 import { createRequestLogger } from "@/lib/logger";
-import { normalizePhone } from "@/lib/normalize";
+import { countryForOrg, normalizePhone } from "@/lib/normalize";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -20,14 +20,6 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
  */
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-/** Timezone is the only country-ish signal on an organization today. */
-function countryForOrg(timezone: string): string {
-  if (timezone === "Europe/Vienna") return "AT";
-  if (timezone === "Europe/Zurich") return "CH";
-  if (timezone === "Europe/London") return "GB";
-  return "DE";
-}
 
 export async function POST(request: NextRequest) {
   const { log, requestId } = createRequestLogger({ route: "/api/import/chunk" });
@@ -77,7 +69,7 @@ export async function POST(request: NextRequest) {
   const country = countryForOrg(session.organization.timezone);
   const rows = parsed.data.rows.map((row) => ({
     ...row,
-    phone: normalizePhone(row.phone, country as Parameters<typeof normalizePhone>[1]),
+    phone: normalizePhone(row.phone, country),
   }));
 
   const supabase = await createSupabaseServerClient();

@@ -13,7 +13,10 @@
     "format:check": "prettier --check .",
     "i18n:check": "tsx scripts/i18n-parity.ts",
     "i18n:check:strict": "tsx scripts/i18n-parity.ts --strict",
-    "verify": "pnpm typecheck && pnpm lint && pnpm i18n:check && pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "verify": "pnpm typecheck && pnpm lint && pnpm i18n:check && pnpm test && pnpm build",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
@@ -65,6 +68,7 @@
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.11",
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
@@ -78,7 +82,8 @@
     "supabase": "^2.114.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

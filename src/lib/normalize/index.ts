@@ -8,12 +8,13 @@
  *
  * These are exactly the functions unit tests exist for — pure input→output with
  * many edge cases, where a silent failure corrupts customer data permanently.
- * Vitest is deferred (build plan §1.4), so Phase 3 adds a fixture harness at
- * /dev/import-fixtures instead. If one testing tool is reinstated early, point
- * it here first.
+ * Vitest was deferred (build plan §1.4) and reinstated in Phase 9, pointed here
+ * first as that section said it should be. The fixture harness at
+ * /dev/import-fixtures remains, sharing its case tables with the suite.
  */
 
 export { normalizeEmail } from "./email";
 export { normalizePhone } from "./phone";
+export { countryForOrg } from "./country";
 export { normalizeDomain, normalizeWebsite } from "./domain";
 export { normalizeName, normalizeText } from "./name";

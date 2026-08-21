@@ -51,9 +51,12 @@ costs and when to revisit it.
 | Drag & drop           | dnd-kit                                           |
 | Hosting               | Netlify                                           |
 
-Monitoring (Sentry), analytics (PostHog) and the test frameworks are
-deliberately deferred — see §1.4 of the plan for what replaces them and when to
-bring each one back.
+Monitoring (Sentry) and analytics (PostHog) are deliberately deferred — see §1.4
+of the plan for what replaces them and when to bring each one back.
+
+**Vitest is no longer deferred.** It was reinstated in Phase 9 on the pure
+functions, which is where §1.4 said to point it first. Playwright is still out;
+the manual release checklist remains the E2E net.
 
 ---
 
@@ -83,12 +86,15 @@ Without Docker the app still runs — `/api/health` will report
 | Command                       | Purpose                                                     |
 | ----------------------------- | ----------------------------------------------------------- |
 | `pnpm dev`                    | Dev server                                                  |
-| `pnpm verify`                 | typecheck → lint → i18n parity → build. Run before pushing. |
+| `pnpm verify`                 | typecheck → lint → i18n → test → build. Run before pushing. |
 | `pnpm typecheck`              | `tsc --noEmit`                                              |
 | `pnpm lint` / `pnpm lint:fix` | ESLint (`next lint` was removed in Next 16)                 |
 | `pnpm format`                 | Prettier                                                    |
 | `pnpm i18n:check`             | Message catalogue parity (warn mode)                        |
 | `pnpm i18n:check:strict`      | Same, failing on any gap — CI switches to this in Phase 9b  |
+| `pnpm test`                   | Vitest unit suite (~1 s)                                    |
+| `pnpm test:watch`             | Same, in watch mode                                         |
+| `pnpm test:coverage`          | Suite plus a coverage report                                |
 | `pnpm db:start` / `db:stop`   | Local Supabase stack                                        |
 | `pnpm db:reset`               | Re-apply all migrations locally                             |
 | `pnpm db:diff -- <name>`      | Author a migration from local schema changes                |
@@ -114,10 +120,15 @@ These are enforced, not aspirational. The full list is §3 of the plan.
    Text the system generates (feed sentences, overdue labels) stores only a type
    plus metadata and is _composed at render time_. Getting this backwards is the
    classic i18n bug.
-6. **Environment access goes through `@/env`,** never `process.env`.
-7. **The service-role key never reaches the browser.** CI greps the client
+6. **Phone numbers are E.164 with an RFC 3966 extension suffix** —
+   `+493012345678;ext=42`. Unparseable input is kept verbatim instead of being
+   discarded. The suffix spelling is not cosmetic: the value is compared for
+   equality by dedupe, and prose ("x42", "Durchwahl 42") would make two records
+   of one person look different. It is also a valid `tel:` href.
+7. **Environment access goes through `@/env`,** never `process.env`.
+8. **The service-role key never reaches the browser.** CI greps the client
    bundle for it.
-8. **Server Actions return `ActionResult`, never throw across the boundary.**
+9. **Server Actions return `ActionResult`, never throw across the boundary.**
    Errors carry a translation _key_ (`errors.action.*`), so the message is
    composed in the reader's language — same rule as #5.
 
@@ -251,6 +262,35 @@ company_id, deal_id) = 1`. Roll-up (a deal's feed showing its contact's
   real subscription change over a new field would be a silent revenue bug.
 - Sandbox and production are **different Polar hosts**; `POLAR_SERVER` picks one.
   Getting it wrong means checkouts that never become real money.
+
+### Tests
+
+- **Everything lives in `/tests`**, flat, with the filename recording its
+  subject: `lib.csv.rows.test.ts` covers `src/lib/csv/rows.ts`. One directory,
+  and `src/` holds only shipped code.
+- **`/tests` is git-ignored by project decision.** Read the note in `.gitignore`
+  before relying on the suite: the files are not in version control, so **CI does
+  not run them** and a fresh clone has none. `pnpm test` is a local discipline.
+  `vitest.config.mts` sets `passWithNoTests`, so `pnpm verify` still succeeds for
+  someone who has not written them.
+- **Vitest covers the pure functions only** — `lib/` plus the two dashboard
+  helpers. 483 tests, ~1 s, 94% statements on that scope.
+- **Nothing is mocked.** A test that mocks the Supabase client proves the mock
+  works. Anything needing a database is verified another way: the RLS audit in
+  CI, the live RPC checks recorded in the Phase 9 notes, and the manual
+  two-browser check at the top of the release checklist.
+- **The fixture case tables are shared** with `/dev/import-fixtures`. A case
+  added to `money-cases.ts`, `due-cases.ts`, `fold-cases.ts` or
+  `markdown-cases.ts` is picked up by both the page and the suite, so the two
+  cannot drift into disagreeing.
+- **`server-only` is aliased** to `tests/server-only-stub.ts` under Vitest.
+  Without it, every query and action module fails to import.
+- **`SKIP_ENV_VALIDATION` bypasses zod _defaults_, not just checks.** That is why
+  the config sets `LOG_LEVEL` explicitly: `env.LOG_LEVEL` comes back undefined
+  and pino throws on an undefined level at import time.
+- Writing the suite found four defects, all now fixed: a dropped phone
+  extension, a wrong comment in `money.ts`, a legal page with no draft warning,
+  and an unreachable `noHeader` guard. See §1.4a of the plan.
 
 ### Security headers and CSP
 

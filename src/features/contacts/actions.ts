@@ -12,7 +12,13 @@ import {
 } from "@/lib/actions";
 import { requireEntitlement } from "@/features/billing/entitlements";
 import { getSession } from "@/lib/auth/session";
-import { normalizeEmail, normalizeName, normalizePhone, normalizeText } from "@/lib/normalize";
+import {
+  countryForOrg,
+  normalizeEmail,
+  normalizeName,
+  normalizePhone,
+  normalizeText,
+} from "@/lib/normalize";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   bulkAssignOwnerSchema,
@@ -31,30 +37,21 @@ import {
  * created by import is byte-identical to one typed by hand. Normalising only in
  * the form would let the other paths produce near-duplicates.
  */
-function normalizeContact(values: ContactFormValues, countryCode: string) {
+function normalizeContact(
+  values: ContactFormValues,
+  countryCode: ReturnType<typeof countryForOrg>,
+) {
   return {
     first_name: normalizeName(values.firstName),
     last_name: normalizeName(values.lastName),
     email: normalizeEmail(values.email),
-    phone: normalizePhone(values.phone, countryCode as Parameters<typeof normalizePhone>[1]),
+    phone: normalizePhone(values.phone, countryCode),
     job_title: normalizeText(values.jobTitle, 150),
     linkedin_url: normalizeText(values.linkedinUrl, 500),
     notes: normalizeText(values.notes, 10000),
     company_id: values.companyId,
     owner_id: values.ownerId,
   };
-}
-
-/**
- * The organization's country drives national-format phone parsing. Timezone is
- * the only country-ish signal on the org today, so it stands in until an
- * explicit country field exists.
- */
-function countryForOrg(timezone: string): string {
-  if (timezone === "Europe/Vienna") return "AT";
-  if (timezone === "Europe/Zurich") return "CH";
-  if (timezone === "Europe/London") return "GB";
-  return "DE";
 }
 
 export async function createContact(input: unknown): Promise<ActionResult<{ id: string }>> {
